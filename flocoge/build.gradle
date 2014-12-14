@@ -1,0 +1,5 @@
+jar {
+    manifest {
+        attributes("Main-Class": "pl.dpawlak.flocoge.Main")
+    }
+}
