@@ -139,7 +139,7 @@ public class DiagramLoader {
 
         @Override
         public boolean accept(XMLEvent event) {
-            return event.isStartElement() && "diagram".equals(event.asStartElement().getName().getLocalPart());
+            return event.isStartElement() && "diagram".equals(event.asStartElement().getName().toString());
         }
     }
 }
