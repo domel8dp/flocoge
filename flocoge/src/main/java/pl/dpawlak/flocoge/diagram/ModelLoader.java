@@ -16,6 +16,8 @@ import javax.xml.stream.events.XMLEvent;
 
 import pl.dpawlak.flocoge.diagram.ModelElementParser.Connection;
 import pl.dpawlak.flocoge.diagram.ModelElementParser.Label;
+import pl.dpawlak.flocoge.model.ModelConnection;
+import pl.dpawlak.flocoge.model.ModelElement;
 
 /**
  * Created by dpawlak on Dec 20, 2014

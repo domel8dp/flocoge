@@ -11,9 +11,10 @@ import javax.xml.stream.XMLStreamException;
 
 import org.junit.Test;
 
-import pl.dpawlak.flocoge.diagram.ModelElement.Shape;
-import pl.dpawlak.flocoge.diagram.util.ModelBuilder;
-import pl.dpawlak.flocoge.diagram.util.ModelTraversingValidator;
+import pl.dpawlak.flocoge.model.ModelElement;
+import pl.dpawlak.flocoge.model.ModelElement.Shape;
+import pl.dpawlak.flocoge.model.util.ModelBuilder;
+import pl.dpawlak.flocoge.model.util.ModelsMatchingValidator;
 
 /**
  * Created by dpawlak on Dec 30, 2014
@@ -56,7 +57,7 @@ public class ModelLoaderTest {
         ModelLoader loader = new ModelLoader(factory);
         Map<String, ModelElement> startElements = loader.loadModel(reader, reader.nextTag().asStartElement());
         
-        new ModelTraversingValidator(startElements.values(), EXPECTED_PATHS.values()).validate();
+        new ModelsMatchingValidator(startElements.values(), EXPECTED_PATHS.values()).validate();
     }
 
 }

@@ -4,7 +4,8 @@ import javax.xml.namespace.QName;
 import javax.xml.stream.events.Attribute;
 import javax.xml.stream.events.StartElement;
 
-import pl.dpawlak.flocoge.diagram.ModelElement.Shape;
+import pl.dpawlak.flocoge.model.ModelElement;
+import pl.dpawlak.flocoge.model.ModelElement.Shape;
 
 /**
  * Created by dpawlak on Jan 5, 2015

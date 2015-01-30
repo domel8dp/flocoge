@@ -1,4 +1,4 @@
-package pl.dpawlak.flocoge.diagram;
+package pl.dpawlak.flocoge.model;
 
 import java.util.LinkedList;
 import java.util.List;

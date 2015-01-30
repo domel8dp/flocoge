@@ -1,23 +1,23 @@
-package pl.dpawlak.flocoge.diagram.util;
+package pl.dpawlak.flocoge.model.util;
 
 import static org.junit.Assert.*;
 
 import java.util.Collection;
 import java.util.Iterator;
 
-import pl.dpawlak.flocoge.diagram.ModelConnection;
-import pl.dpawlak.flocoge.diagram.ModelElement;
-import pl.dpawlak.flocoge.diagram.ModelElement.Shape;
+import pl.dpawlak.flocoge.model.ModelConnection;
+import pl.dpawlak.flocoge.model.ModelElement;
+import pl.dpawlak.flocoge.model.ModelElement.Shape;
 
 /**
  * Created by dpawlak on Jan 8, 2015
  */
-public class ModelTraversingValidator {
+public class ModelsMatchingValidator {
     
     private final Collection<ModelElement> elements;
     private final Collection<ModelElement> expectedElements;
     
-    public ModelTraversingValidator(Collection<ModelElement> elements, Collection<ModelElement> expectedElements) {
+    public ModelsMatchingValidator(Collection<ModelElement> elements, Collection<ModelElement> expectedElements) {
         this.elements = elements;
         this.expectedElements = expectedElements;
     }

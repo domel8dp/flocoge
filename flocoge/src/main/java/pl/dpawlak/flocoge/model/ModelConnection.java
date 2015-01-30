@@ -1,4 +1,4 @@
-package pl.dpawlak.flocoge.diagram;
+package pl.dpawlak.flocoge.model;
 
 /**
  * Created by dpawlak on Jan 5, 2015
