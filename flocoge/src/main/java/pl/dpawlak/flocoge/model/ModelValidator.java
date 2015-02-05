@@ -44,13 +44,15 @@ public class ModelValidator {
             element = skipUnimportant(element);
             if (valid && element != null && !alreadyVisited(element)) {
                 thisBranchElements.add(element.id);
-                if (element.shape == Shape.DECISION && checkDecision(element)) {
-                    Iterator<ModelConnection> connectionsIterator = element.connections.iterator();
-                    while (valid && connectionsIterator.hasNext()) {
-                        visitedElements.add(new HashSet<String>());
-                        traverseBranch(connectionsIterator.next().target);
+                if (element.shape == Shape.DECISION) {
+                    if (checkDecision(element)) {
+                        Iterator<ModelConnection> connectionsIterator = element.connections.iterator();
+                        while (valid && connectionsIterator.hasNext()) {
+                            visitedElements.add(new HashSet<String>());
+                            traverseBranch(connectionsIterator.next().target);
+                        }
+                        element = null;
                     }
-                    element = null;
                 } else if (checkElement(element)) {
                     element = getNextElement(element);
                 }
@@ -77,18 +79,58 @@ public class ModelValidator {
         }
         return false;
     }
+
+    private boolean checkElement(ModelElement element) {
+        if (ModelNamesUtils.validateElementLabel(element.label)) {
+            element.label = ModelNamesUtils.convertElementLabel(element.label);
+            return true;
+        } else {
+            setError("Diagram error (element has invalid label: '" + element.label + "')");
+            return false;
+        }
+    }
     
     private boolean checkDecision(ModelElement element) {
         if (element.connections.size() <= 1) {
             setError("Diagram error (decision element '" + element.label + "' does not have enough branches)");
             return false;
+        } else if (ModelNamesUtils.validateElementLabel(element.label)) {
+            element.label = ModelNamesUtils.convertElementLabel(element.label);
+            return checkDecisionBranches(element);
         } else {
-            return true;
+            setError("Diagram error (decision element has invalid label: '" + element.label + "')");
+            return false;
         }
     }
-
-    private boolean checkElement(ModelElement element) {
+    
+    private boolean checkDecisionBranches(ModelElement element) {
+        for(ModelConnection connection : element.connections) {
+            if (ModelNamesUtils.validateElementLabel(connection.label)) {
+                connection.label = ModelNamesUtils.convertConnectionLabel(connection.label);
+            } else {
+                setError("Diagram error (decision element '" + element.label + "' branch has invalid label: '" +
+                    connection.label + "')");
+                return false;
+            }
+        }
+        convertBooleanBranches(element);
         return true;
+    }
+    
+    private void convertBooleanBranches(ModelElement element) {
+        if (element.connections.size() == 2) {
+            String first = element.connections.get(0).label;
+            String second = element.connections.get(1).label;
+            if (("Y".equals(first) || "YES".equals(first) || "TRUE".equals(first)) &&
+                    ("N".equals(second) || "NO".equals(second) || "FALSE".equals(second))) {
+                element.connections.get(0).label = "true";
+                element.connections.get(1).label = "false";
+            } else if (("N".equals(first) || "NO".equals(first) || "FALSE".equals(first)) &&
+                    ("Y".equals(second) || "YES".equals(second) || "TRUE".equals(second))) {
+                element.connections.get(0).label = "false";
+                element.connections.get(1).label = "true";
+            }
+        }
     }
     
     private ModelElement getNextElement(ModelElement element) {

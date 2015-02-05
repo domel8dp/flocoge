@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
+import java.util.Map;
 import java.util.zip.Inflater;
 import java.util.zip.InflaterOutputStream;
 
@@ -20,6 +21,7 @@ import javax.xml.stream.events.StartElement;
 import javax.xml.stream.events.XMLEvent;
 
 import pl.dpawlak.flocoge.config.Configuration;
+import pl.dpawlak.flocoge.model.ModelElement;
 
 /**
  * Created by dpawlak on Dec 17, 2014
@@ -35,10 +37,10 @@ public class DiagramLoader {
     public DiagramLoader(Configuration config, ModelLoader loader) {
         this.config = config;
         this.loader = loader;
-        factory = XMLInputFactory.newInstance();
+        factory = loader.getFactory();
     }
     
-    public void loadDiagram() throws DiagramLoadingException {
+    public Map<String, ModelElement> loadDiagram() throws DiagramLoadingException {
         try (FileInputStream inputStream = new FileInputStream(config.diagramPath)) {
             reader = factory.createXMLEventReader(inputStream);
             if (reader.hasNext()) {
@@ -49,9 +51,9 @@ public class DiagramLoader {
                     reader.close();
                     String diagramData = decryptDiagram(encryptedContentElement.getData());
                     prepareXmlReader(diagramData);
-                    loader.loadModel(reader, startElement);
+                    return loader.loadModel(reader, startElement);
                 } else if ("mxGraphModel".equals(rootName)) {
-                    loader.loadModel(reader, startElement);
+                    return loader.loadModel(reader, startElement);
                 } else {
                     throw new DiagramLoadingException("Diagram loading error (invalid root element)");
                 }

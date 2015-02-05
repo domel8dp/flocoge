@@ -102,6 +102,10 @@ public class ModelLoader {
                 break;
         }
     }
+
+    public XMLInputFactory getFactory() {
+        return factory;
+    }
     
     private static class MxCellElementFilter implements EventFilter {
 

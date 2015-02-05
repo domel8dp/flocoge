@@ -5,6 +5,7 @@ import static org.mockito.Mockito.*;
 import java.io.File;
 
 import javax.xml.stream.XMLEventReader;
+import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.events.StartElement;
 
 import org.junit.Test;
@@ -23,7 +24,7 @@ public class DiagramLoaderTest {
 
     @Test
     public void testLoadingEncryptedDiagram() throws DiagramLoadingException {
-        ModelLoader modelLoader = mock(ModelLoader.class);
+        ModelLoader modelLoader = mockModelLoader();
         DiagramLoader loader = new DiagramLoader(new Configuration(ENCRYPTED_DIAGRAM, null, null), modelLoader);
         loader.loadDiagram();
         verify(modelLoader).loadModel(any(XMLEventReader.class), argThat(new StartElementMatcher()));
@@ -31,7 +32,7 @@ public class DiagramLoaderTest {
 
     @Test
     public void testLoadingPlainDiagram() throws DiagramLoadingException {
-        ModelLoader modelLoader = mock(ModelLoader.class);
+        ModelLoader modelLoader = mockModelLoader();
         DiagramLoader loader = new DiagramLoader(new Configuration(PLAIN_DIAGRAM, null, null), modelLoader);
         loader.loadDiagram();
         verify(modelLoader).loadModel(any(XMLEventReader.class), argThat(new StartElementMatcher()));
@@ -39,9 +40,15 @@ public class DiagramLoaderTest {
 
     @Test(expected = DiagramLoadingException.class)
     public void testLoadingInvalidDiagramFile() throws DiagramLoadingException {
-        ModelLoader modelLoader = mock(ModelLoader.class);
+        ModelLoader modelLoader = mockModelLoader();
         DiagramLoader loader = new DiagramLoader(new Configuration(INVALID_FILE, null, null), modelLoader);
         loader.loadDiagram();
+    }
+    
+    private ModelLoader mockModelLoader() {
+        ModelLoader modelLoader = mock(ModelLoader.class);
+        when(modelLoader.getFactory()).thenReturn(XMLInputFactory.newInstance());
+        return modelLoader;
     }
     
     private static class StartElementMatcher extends ArgumentMatcher<StartElement> {
