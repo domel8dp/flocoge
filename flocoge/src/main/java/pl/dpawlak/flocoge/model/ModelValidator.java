@@ -1,10 +1,10 @@
 package pl.dpawlak.flocoge.model;
 
+import java.util.Collection;
 import java.util.Deque;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
-import java.util.Map;
 import java.util.Set;
 
 import pl.dpawlak.flocoge.model.ModelElement.Shape;
@@ -14,13 +14,13 @@ import pl.dpawlak.flocoge.model.ModelElement.Shape;
  */
 public class ModelValidator {
     
-    private final Map<String, ModelElement> startElements;
+    private final Collection<ModelElement> startElements;
     private final Deque<Set<String>> visitedElements;
     
     private boolean valid;
     private String error;
 
-    public ModelValidator(Map<String, ModelElement> startElements) {
+    public ModelValidator(Collection<ModelElement> startElements) {
         this.startElements = startElements;
         visitedElements = new LinkedList<>();
     }
@@ -28,7 +28,7 @@ public class ModelValidator {
     public boolean validate() {
         valid = true;
         error = "";
-        Iterator<ModelElement> startElementIterator = startElements.values().iterator();
+        Iterator<ModelElement> startElementIterator = startElements.iterator();
         while (valid && startElementIterator.hasNext()) {
             visitedElements.clear();
             visitedElements.add(new HashSet<String>());
@@ -81,12 +81,11 @@ public class ModelValidator {
     }
 
     private boolean checkElement(ModelElement element) {
-        if (ModelNamesUtils.validateElementLabel(element.label)) {
-            element.label = ModelNamesUtils.convertElementLabel(element.label);
-            return true;
-        } else {
+        if (!ModelNamesUtils.validateElementLabel(element.label)) {
             setError("Diagram error (element has invalid label: '" + element.label + "')");
             return false;
+        } else {
+            return true;
         }
     }
     
@@ -95,7 +94,6 @@ public class ModelValidator {
             setError("Diagram error (decision element '" + element.label + "' does not have enough branches)");
             return false;
         } else if (ModelNamesUtils.validateElementLabel(element.label)) {
-            element.label = ModelNamesUtils.convertElementLabel(element.label);
             return checkDecisionBranches(element);
         } else {
             setError("Diagram error (decision element has invalid label: '" + element.label + "')");
@@ -105,32 +103,13 @@ public class ModelValidator {
     
     private boolean checkDecisionBranches(ModelElement element) {
         for(ModelConnection connection : element.connections) {
-            if (ModelNamesUtils.validateElementLabel(connection.label)) {
-                connection.label = ModelNamesUtils.convertConnectionLabel(connection.label);
-            } else {
+            if (!ModelNamesUtils.validateElementLabel(connection.label)) {
                 setError("Diagram error (decision element '" + element.label + "' branch has invalid label: '" +
                     connection.label + "')");
                 return false;
             }
         }
-        convertBooleanBranches(element);
         return true;
-    }
-    
-    private void convertBooleanBranches(ModelElement element) {
-        if (element.connections.size() == 2) {
-            String first = element.connections.get(0).label;
-            String second = element.connections.get(1).label;
-            if (("Y".equals(first) || "YES".equals(first) || "TRUE".equals(first)) &&
-                    ("N".equals(second) || "NO".equals(second) || "FALSE".equals(second))) {
-                element.connections.get(0).label = "true";
-                element.connections.get(1).label = "false";
-            } else if (("N".equals(first) || "NO".equals(first) || "FALSE".equals(first)) &&
-                    ("Y".equals(second) || "YES".equals(second) || "TRUE".equals(second))) {
-                element.connections.get(0).label = "false";
-                element.connections.get(1).label = "true";
-            }
-        }
     }
     
     private ModelElement getNextElement(ModelElement element) {

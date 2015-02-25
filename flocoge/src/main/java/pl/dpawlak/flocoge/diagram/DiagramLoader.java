@@ -7,7 +7,7 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
-import java.util.Map;
+import java.util.Collection;
 import java.util.zip.Inflater;
 import java.util.zip.InflaterOutputStream;
 
@@ -40,7 +40,7 @@ public class DiagramLoader {
         factory = loader.getFactory();
     }
     
-    public Map<String, ModelElement> loadDiagram() throws DiagramLoadingException {
+    public Collection<ModelElement> loadDiagram() throws DiagramLoadingException {
         try (FileInputStream inputStream = new FileInputStream(config.diagramPath)) {
             reader = factory.createXMLEventReader(inputStream);
             if (reader.hasNext()) {

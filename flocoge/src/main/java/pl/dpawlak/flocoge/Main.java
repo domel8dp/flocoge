@@ -1,6 +1,6 @@
 package pl.dpawlak.flocoge;
 
-import java.util.Map;
+import java.util.Collection;
 
 import javax.xml.stream.XMLInputFactory;
 
@@ -10,6 +10,8 @@ import pl.dpawlak.flocoge.diagram.DiagramLoader;
 import pl.dpawlak.flocoge.diagram.DiagramLoadingException;
 import pl.dpawlak.flocoge.diagram.ModelLoader;
 import pl.dpawlak.flocoge.model.ModelElement;
+import pl.dpawlak.flocoge.model.ModelTransformer;
+import pl.dpawlak.flocoge.model.ModelValidator;
 
 /**
  * Created by dpawlak on Dec 14, 2014
@@ -23,7 +25,15 @@ public class Main {
                 Configuration config = parser.getConfiguration();
                 ModelLoader modelLoader = new ModelLoader(XMLInputFactory.newInstance());
                 DiagramLoader diagramLoader = new DiagramLoader(config, modelLoader);
-                Map<String, ModelElement> model = diagramLoader.loadDiagram();
+                Collection<ModelElement> model = diagramLoader.loadDiagram();
+                ModelValidator validator = new ModelValidator(model);
+                if (validator.validate()) {
+                    ModelTransformer transformer = new ModelTransformer(model);
+                    model = transformer.transform();
+                } else {
+                    System.err.println("Code generation failed with reason: " + validator.getError());
+                    System.exit(1);
+                }
             }
         } catch (DiagramLoadingException loadingEx) {
             System.err.println("Code generation failed with reason: " + loadingEx.getMessage());

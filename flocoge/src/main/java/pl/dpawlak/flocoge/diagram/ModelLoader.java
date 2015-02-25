@@ -1,5 +1,6 @@
 package pl.dpawlak.flocoge.diagram;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
@@ -38,11 +39,10 @@ public class ModelLoader {
         elements = new HashMap<>();
     }
     
-    public Map<String, ModelElement> loadModel(XMLEventReader reader, StartElement rootElement) throws DiagramLoadingException {
+    public Collection<ModelElement> loadModel(XMLEventReader reader, StartElement rootElement) throws DiagramLoadingException {
         parseElements(reader, rootElement);
         assignLabelsToConnections();
-        Map<String, ModelElement> startElements = connectElements();
-        return startElements;
+        return connectElements();
     }
 
     private void assignLabelsToConnections() {
@@ -55,7 +55,7 @@ public class ModelLoader {
         labels.clear();
     }
     
-    private Map<String, ModelElement> connectElements() {
+    private Collection<ModelElement> connectElements() {
         Map<String, ModelElement> startElements = new LinkedHashMap<>(elements);
         for (Connection connection : connections.values()) {
             ModelElement sourceElement = elements.get(connection.sourceId);
@@ -71,7 +71,7 @@ public class ModelLoader {
         }
         connections.clear();
         elements.clear();
-        return startElements;
+        return startElements.values();
     }
 
     private void parseElements(XMLEventReader reader, StartElement rootElement) throws DiagramLoadingException {

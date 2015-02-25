@@ -7,7 +7,6 @@ import java.util.Iterator;
 
 import pl.dpawlak.flocoge.model.ModelConnection;
 import pl.dpawlak.flocoge.model.ModelElement;
-import pl.dpawlak.flocoge.model.ModelElement.Shape;
 
 /**
  * Created by dpawlak on Jan 8, 2015
@@ -32,8 +31,8 @@ public class ModelsMatchingValidator {
     }
     
     private void compareElements(ModelElement expectedElement, ModelElement element) {
-        ModelElement expected = skipUnimportant(expectedElement);
-        ModelElement actual = skipUnimportant(element);
+        ModelElement expected = expectedElement;
+        ModelElement actual = element;
         if (expected != null && actual != null) {
             assertEquals(expected.shape, actual.shape);
             assertEquals(expected.label, actual.label);
@@ -54,15 +53,5 @@ public class ModelsMatchingValidator {
             assertNull(expected);
             assertNull(actual);
         }
-    }
-    
-    private ModelElement skipUnimportant(ModelElement element) {
-        ModelElement nextElement = element;
-        while (nextElement != null && nextElement.shape == Shape.SKIP) {
-            int connectionsCount = nextElement.connections.size();
-            assertTrue(connectionsCount <= 1);
-            nextElement = connectionsCount > 0 ? nextElement.connections.get(0).target : null;
-        }
-        return nextElement;
     }
 }

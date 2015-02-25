@@ -1,9 +1,8 @@
 package pl.dpawlak.flocoge.model.util;
 
+import java.util.Collection;
 import java.util.Deque;
-import java.util.LinkedHashMap;
 import java.util.LinkedList;
-import java.util.Map;
 
 import pl.dpawlak.flocoge.model.ModelConnection;
 import pl.dpawlak.flocoge.model.ModelElement;
@@ -14,18 +13,23 @@ import pl.dpawlak.flocoge.model.ModelElement.Shape;
  */
 public class ModelBuilder {
     
-    private final Map<String, ModelElement> elements;
+    private final Collection<ModelElement> elements;
     private final Deque<ModelElement> branchStack;
     
     private ModelElement lastElement;
+    private int id;
     
     public ModelBuilder () {
-        elements = new LinkedHashMap<>();
+        elements = new LinkedList<>();
         branchStack = new LinkedList<>();
     }
     
-    public Map<String, ModelElement> build() {
+    public Collection<ModelElement> build() {
         return elements;
+    }
+    
+    public ModelBuilder startPath(Shape shape, String label) {
+        return startPath(String.valueOf(++id), shape, label);
     }
     
     public ModelBuilder startPath(String id, Shape shape, String label) {
@@ -34,12 +38,12 @@ public class ModelBuilder {
         lastElement.id = id;
         lastElement.shape = shape;
         lastElement.label = label;
-        elements.put(id, lastElement);
+        elements.add(lastElement);
         return this;
     }
     
     public ModelBuilder connectElement(Shape shape, String label) {
-        return connectElement(null, shape, label, null);
+        return connectElement(String.valueOf(++id), shape, label, null);
     }
     
     public ModelBuilder connectElement(String id, Shape shape, String label) {
@@ -47,7 +51,7 @@ public class ModelBuilder {
     }
     
     public ModelBuilder connectElement(Shape shape, String label, String connectionLabel) {
-        return connectElement(null, shape, label, connectionLabel);
+        return connectElement(String.valueOf(++id), shape, label, connectionLabel);
     }
     
     public ModelBuilder connectElement(String id, Shape shape, String label, String connectionLabel) {
