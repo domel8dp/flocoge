@@ -74,12 +74,11 @@ public class CommonTestModels {
     }
     
     public static Collection<ModelElement> createModelWithLoop() {
-        ModelBuilder builder = new ModelBuilder()
-            .startPath(Shape.ON_PAGE_REF, "handle error<br>");
-        ModelElement head = builder.getLastElement();
-        return builder
+        return new ModelBuilder()
+            .startPath(Shape.ON_PAGE_REF, "handle error<br>")
+            .markBookmark("LOOP")
             .connectElement(Shape.OPERATION, "show error<br>mesage<br>")
-            .connectElement(head)
+            .connectBookmark("LOOP")
             .build();
     }
     
@@ -179,5 +178,93 @@ public class CommonTestModels {
                     .end()
             .build();
     }
-
+    
+    public static Collection<ModelElement> createComplexModel() {
+        return new ModelBuilder()
+            .startPath(Shape.SKIP, "start")
+                .connectElement(Shape.DECISION, "are there saved devices ?")
+                    .branch()
+                        .connectElement(Shape.DECISION, "do you want to discover ?", "N")
+                            .branch()
+                                .connectElement(Shape.OPERATION, "open discovery tab", "Y")
+                                .connectElement(Shape.ON_PAGE_REF, "start discovery")
+                                .end()
+                            .branch()
+                                .connectElement(Shape.OPERATION, "display message", "N")
+                                .connectElement(Shape.SKIP, "end")
+                                .end()
+                        .end()
+                    .branch()
+                        .connectElement(Shape.OPERATION, "display devices", "Y")
+                        .connectElement(Shape.SKIP, "end")
+                        .end()
+            .startPath(Shape.ON_PAGE_REF, "discovery finished")
+                .connectElement(Shape.OPERATION, "hide progress,<br>cancel")
+                .connectElement(Shape.DECISION, "found devices?")
+                    .branch()
+                        .connectElement(Shape.OPERATION, "enable UI elements", "Y")
+                        .markBookmark("JOIN 1")
+                        .connectElement(Shape.SKIP, "end")
+                        .end()
+                    .branch()
+                        .connectElement(Shape.OPERATION, "show message", "N")
+                        .connectBookmark("JOIN 1")
+                        .end()
+            .startPath(Shape.ON_PAGE_REF, "restore poll")
+                .connectElement(Shape.DECISION, "connection request?")
+                    .branch()
+                        .connectElement(Shape.OPERATION, "restore full poll operation", "N")
+                        .connectElement(Shape.OPERATION, "reset request counter")
+                        .connectElement(Shape.ON_PAGE_REF, "enqueue request")
+                        .markBookmark("JOIN 2")
+                        .connectElement(Shape.OPERATION, "enable UI")
+                        .connectElement(Shape.SKIP, "end")
+                        .end()
+                    .branch()
+                        .connectBookmark("JOIN 2", "Y")
+                        .end()
+            .build();
+    }
+    
+    public static Collection<ModelElement> createTransformedComplexModel() {
+        return new ModelBuilder()
+            .startPath(Shape.DECISION, "areThereSavedDevices")
+                .branch()
+                    .connectElement(Shape.DECISION, "doYouWantToDiscover", "false")
+                        .branch()
+                            .connectElement(Shape.OPERATION, "openDiscoveryTab", "true")
+                            .connectElement(Shape.ON_PAGE_REF, "startDiscovery")
+                            .end()
+                        .branch()
+                            .connectElement(Shape.OPERATION, "displayMessage", "false")
+                            .end()
+                    .end()
+                .branch()
+                    .connectElement(Shape.OPERATION, "displayDevices", "true")
+                    .end()
+            .startPath(Shape.ON_PAGE_REF, "discoveryFinished")
+                .connectElement(Shape.OPERATION, "hideProgressCancel")
+                .connectElement(Shape.DECISION, "foundDevices")
+                    .branch()
+                        .connectElement(Shape.OPERATION, "enableUIElements", "true")
+                        .markBookmark("JOIN")
+                        .end()
+                    .branch()
+                        .connectElement(Shape.OPERATION, "showMessage", "false")
+                        .connectBookmark("JOIN")
+                        .end()
+            .startPath(Shape.ON_PAGE_REF, "restorePoll")
+                .connectElement(Shape.DECISION, "connectionRequest")
+                    .branch()
+                        .connectElement(Shape.OPERATION, "restoreFullPollOperation", "false")
+                        .connectElement(Shape.OPERATION, "resetRequestCounter")
+                        .connectElement(Shape.ON_PAGE_REF, "enqueueRequest")
+                        .markBookmark("JOIN 2")
+                        .connectElement(Shape.OPERATION, "enableUI")
+                        .end()
+                    .branch()
+                        .connectBookmark("JOIN 2", "true")
+                        .end()
+            .build();
+    }
 }

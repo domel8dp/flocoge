@@ -2,7 +2,9 @@ package pl.dpawlak.flocoge.model.util;
 
 import java.util.Collection;
 import java.util.Deque;
+import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.Map;
 
 import pl.dpawlak.flocoge.model.ModelConnection;
 import pl.dpawlak.flocoge.model.ModelElement;
@@ -15,6 +17,7 @@ public class ModelBuilder {
     
     private final Collection<ModelElement> elements;
     private final Deque<ModelElement> branchStack;
+    private final Map<String, ModelElement> bookmarks;
     
     private ModelElement lastElement;
     private int id;
@@ -22,6 +25,7 @@ public class ModelBuilder {
     public ModelBuilder () {
         elements = new LinkedList<>();
         branchStack = new LinkedList<>();
+        bookmarks = new HashMap<>();
     }
     
     public Collection<ModelElement> build() {
@@ -85,8 +89,23 @@ public class ModelBuilder {
         lastElement = branchStack.removeLast();
         return this;
     }
-
-    public ModelElement getLastElement() {
-        return lastElement;
+    
+    public ModelBuilder markBookmark(String name) {
+        bookmarks.put(name, lastElement);
+        return this;
+    }
+    
+    public ModelBuilder connectBookmark(String name) {
+        return connectBookmark(name, null);
+    }
+    
+    public ModelBuilder connectBookmark(String name, String connectionLabel) {
+        ModelElement previousElement = lastElement;
+        lastElement = bookmarks.get(name);
+        ModelConnection connection = new ModelConnection();
+        connection.label = connectionLabel;
+        connection.target = lastElement;
+        previousElement.connections.add(connection);
+        return this;
     }
 }

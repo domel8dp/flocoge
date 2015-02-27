@@ -65,4 +65,11 @@ public class ModelValidatorTest {
         assertFalse(validator.validate());
         assertTrue(validator.getError().contains("branch has invalid label"));
     }
+    
+    @Test
+    public void testComplexModelValidation() {
+        Collection<ModelElement> startElements = CommonTestModels.createComplexModel();
+        ModelValidator validator = new ModelValidator(startElements);
+        assertTrue(validator.validate());
+    }
 }

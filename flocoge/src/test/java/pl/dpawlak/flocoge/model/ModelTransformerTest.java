@@ -34,4 +34,12 @@ public class ModelTransformerTest {
         ModelTransformer transformer = new ModelTransformer(startElements);
         new ModelsMatchingValidator(transformer.transform(), expectedElements).validate();
     }
+    
+    @Test
+    public void testComplexModelTransforming() {
+        Collection<ModelElement> startElements = CommonTestModels.createComplexModel();
+        Collection<ModelElement> expectedElements = CommonTestModels.createTransformedComplexModel();
+        ModelTransformer transformer = new ModelTransformer(startElements);
+        new ModelsMatchingValidator(transformer.transform(), expectedElements).validate();
+    }
 }
