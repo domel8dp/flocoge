@@ -9,11 +9,13 @@ public class Configuration {
     
     public final File diagramPath;
     public final File srcFolder;
+    public final String baseName;
     public final String packageName;
     
-    public Configuration(File diagramPath, File srcFolder, String packageName) {
+    public Configuration(File diagramPath, File srcFolder, String baseName, String packageName) {
         this.diagramPath = diagramPath;
         this.srcFolder = srcFolder;
+        this.baseName = baseName;
         this.packageName = packageName;
     }
 

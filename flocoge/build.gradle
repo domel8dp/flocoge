@@ -3,12 +3,17 @@ repositories {
 }
 
 dependencies {
+    compile "com.sun.codemodel:codemodel:$codemodelVersion"
+    
     testCompile "junit:junit:$junitVersion"
     testCompile "org.mockito:mockito-core:$mockitoVersion"
 }
 
-jar {
-    manifest {
-        attributes("Main-Class": "pl.dpawlak.flocoge.Main")
-    }
+task fatJar(type: Jar) {
+    manifest { attributes 'Main-Class': "pl.dpawlak.flocoge.Main" }
+    baseName = project.name + '-all'
+    from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
+    with jar
 }
+
+build.dependsOn fatJar

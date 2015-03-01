@@ -20,7 +20,7 @@ public class CommandLineConfigParserTest {
     private static final String[] VALID_PARAMS = {VALID_DIAGRAM_PATH, VALID_SRC_FOLDER, VALID_PACKAGE_NAME};
     private static final String HELP_FLAG = "--help";
     private static final String INVALID_DIAGRAM_PATH = "build.xml";
-    private static final String INVALID_SRC_FOLDER = "src/main/groovy";
+    private static final String INVALID_SRC_FOLDER = "build.gradle";
     private static final String INVALID_PACKAGE_NAME = "_InvalidPackage";
     
     @Test

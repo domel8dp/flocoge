@@ -25,7 +25,7 @@ public class DiagramLoaderTest {
     @Test
     public void testLoadingEncryptedDiagram() throws DiagramLoadingException {
         ModelLoader modelLoader = mockModelLoader();
-        DiagramLoader loader = new DiagramLoader(new Configuration(ENCRYPTED_DIAGRAM, null, null), modelLoader);
+        DiagramLoader loader = new DiagramLoader(new Configuration(ENCRYPTED_DIAGRAM, null, null, null), modelLoader);
         loader.loadDiagram();
         verify(modelLoader).loadModel(any(XMLEventReader.class), argThat(new StartElementMatcher()));
     }
@@ -33,7 +33,7 @@ public class DiagramLoaderTest {
     @Test
     public void testLoadingPlainDiagram() throws DiagramLoadingException {
         ModelLoader modelLoader = mockModelLoader();
-        DiagramLoader loader = new DiagramLoader(new Configuration(PLAIN_DIAGRAM, null, null), modelLoader);
+        DiagramLoader loader = new DiagramLoader(new Configuration(PLAIN_DIAGRAM, null, null, null), modelLoader);
         loader.loadDiagram();
         verify(modelLoader).loadModel(any(XMLEventReader.class), argThat(new StartElementMatcher()));
     }
@@ -41,7 +41,7 @@ public class DiagramLoaderTest {
     @Test(expected = DiagramLoadingException.class)
     public void testLoadingInvalidDiagramFile() throws DiagramLoadingException {
         ModelLoader modelLoader = mockModelLoader();
-        DiagramLoader loader = new DiagramLoader(new Configuration(INVALID_FILE, null, null), modelLoader);
+        DiagramLoader loader = new DiagramLoader(new Configuration(INVALID_FILE, null, null, null), modelLoader);
         loader.loadDiagram();
     }
     
