@@ -34,8 +34,8 @@ public class ModelsMatchingValidator {
         ModelElement expected = expectedElement;
         ModelElement actual = element;
         if (expected != null && actual != null) {
-            assertEquals(expected.shape, actual.shape);
             assertEquals(expected.label, actual.label);
+            assertEquals(expected.shape, actual.shape);
             if (expected.connections.size() == 0 && actual.connections.size() == 1) {
                 compareElements(null, actual.connections.get(0).target);
             } else {

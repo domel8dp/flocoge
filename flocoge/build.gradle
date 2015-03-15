@@ -10,10 +10,13 @@ dependencies {
 }
 
 task fatJar(type: Jar) {
-    manifest { attributes 'Main-Class': "pl.dpawlak.flocoge.Main" }
+    manifest {
+        attributes 'Main-Class': "pl.dpawlak.flocoge.Main"
+        attributes 'Flocoge-Version': "$version"
+    }
     baseName = project.name + '-all'
     from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
     with jar
 }
 
-build.dependsOn fatJar
+assemble.dependsOn fatJar

@@ -1,7 +1,7 @@
 package pl.dpawlak.flocoge.model;
 
 import java.util.Collection;
-import java.util.Iterator;
+import java.util.Collections;
 import java.util.LinkedList;
 
 import pl.dpawlak.flocoge.model.ModelElement.Shape;
@@ -19,9 +19,8 @@ public class ModelTransformer {
     
     public Collection<ModelElement> transform() {
         LinkedList<ModelElement> transformed = new LinkedList<>();
-        Iterator<ModelElement> startElementIterator = startElements.iterator();
-        while (startElementIterator.hasNext()) {
-            ModelElement compactedBranch = compactBranch(startElementIterator.next());
+        for (ModelElement startElement : startElements) {
+            ModelElement compactedBranch = compactBranch(startElement);
             if (compactedBranch != null) {
                 transformBranch(compactedBranch);
                 transformed.add(compactedBranch);
@@ -35,9 +34,7 @@ public class ModelTransformer {
         ModelElement element = compactedStartElement;
         while (element != null) {
             if (element.shape == Shape.DECISION) {
-                Iterator<ModelConnection> connectionsIterator = element.connections.iterator();
-                while (connectionsIterator.hasNext()) {
-                    ModelConnection connection = connectionsIterator.next();
+                for (ModelConnection connection : element.connections) {
                     connection.target = compactBranch(connection.target);
                 }
                 element = null;
@@ -58,9 +55,8 @@ public class ModelTransformer {
         while (element != null) {
             if (element.shape == Shape.DECISION) {
                 transformDecision(element);
-                Iterator<ModelConnection> connectionsIterator = element.connections.iterator();
-                while (connectionsIterator.hasNext()) {
-                    transformBranch(connectionsIterator.next().target);
+                for (ModelConnection connection : element.connections) {
+                    transformBranch(connection.target);
                 }
                 element = null;
             } else {
@@ -100,12 +96,13 @@ public class ModelTransformer {
             String second = element.connections.get(1).label;
             if (("Y".equals(first) || "YES".equals(first) || "TRUE".equals(first)) &&
                     ("N".equals(second) || "NO".equals(second) || "FALSE".equals(second))) {
-                element.connections.get(0).label = "true";
-                element.connections.get(1).label = "false";
+                element.connections.get(0).label = ModelConnection.TRUE;
+                element.connections.get(1).label = ModelConnection.FALSE;
             } else if (("N".equals(first) || "NO".equals(first) || "FALSE".equals(first)) &&
                     ("Y".equals(second) || "YES".equals(second) || "TRUE".equals(second))) {
-                element.connections.get(0).label = "false";
-                element.connections.get(1).label = "true";
+                element.connections.get(0).label = ModelConnection.FALSE;
+                element.connections.get(1).label = ModelConnection.TRUE;
+                Collections.swap(element.connections, 0, 1);
             }
         }
     }

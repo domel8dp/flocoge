@@ -8,7 +8,7 @@ import java.util.List;
  */
 public class ModelElement {
     
-    public enum Shape {EVENT, OPERATION, DECISION, ON_PAGE_REF, OFF_PAGE_REF, SKIP}
+    public enum Shape { EVENT, OPERATION, DECISION, ON_PAGE_REF, OFF_PAGE_REF, SKIP }
     
     public String id;
     public Shape shape;

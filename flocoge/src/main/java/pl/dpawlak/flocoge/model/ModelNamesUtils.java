@@ -72,4 +72,8 @@ public final class ModelNamesUtils {
         }
     }
 
+    public static String createEnumName(String methodName) {
+        return new StringBuilder().append(Character.toUpperCase(methodName.charAt(0))).append(methodName.substring(1))
+            .append("Result").toString();
+    }
 }
