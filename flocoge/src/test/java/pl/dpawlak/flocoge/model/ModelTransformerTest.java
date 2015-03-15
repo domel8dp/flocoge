@@ -36,6 +36,14 @@ public class ModelTransformerTest {
     }
     
     @Test
+    public void testOnPageRefsMovingToBack() {
+        Collection<ModelElement> startElements = CommonTestModels.createModelWithOnPageRefs();
+        Collection<ModelElement> expectedElements = CommonTestModels.createTransformedModelWithOnPageRefs();
+        ModelTransformer transformer = new ModelTransformer(startElements);
+        new ModelsMatchingValidator(transformer.transform(), expectedElements).validate();
+    }
+    
+    @Test
     public void testComplexModelTransforming() {
         Collection<ModelElement> startElements = CommonTestModels.createComplexModel();
         Collection<ModelElement> expectedElements = CommonTestModels.createTransformedComplexModel();

@@ -46,8 +46,6 @@ public class CommonTestModels {
     
     public static Collection<ModelElement> createTestFileModelTransformed() {
         return new ModelBuilder()
-            .startPath(Shape.ON_PAGE_REF, "handleError")
-                .connectElement(Shape.OPERATION, "showErrorMesage")
             .startPath(Shape.EVENT, "userAction")
                 .connectElement(Shape.OPERATION, "performDefinedAction")
                 .connectElement(Shape.DECISION, "whichUserType")
@@ -70,6 +68,8 @@ public class CommonTestModels {
                     .branch()
                         .connectElement(Shape.ON_PAGE_REF, "handleError", "false")
                         .end()
+            .startPath(Shape.ON_PAGE_REF, "handleError")
+                .connectElement(Shape.OPERATION, "showErrorMesage")
             .build();
     }
     
@@ -176,6 +176,24 @@ public class CommonTestModels {
                 .branch()
                     .connectElement(Shape.OFF_PAGE_REF, "processNormalUserRequest", "false")
                     .end()
+            .build();
+    }
+
+    public static Collection<ModelElement> createModelWithOnPageRefs() {
+        return new ModelBuilder()
+            .startPath(Shape.ON_PAGE_REF, "private1")
+            .startPath(Shape.OPERATION, "operation1")
+            .startPath(Shape.ON_PAGE_REF, "private2")
+            .startPath(Shape.OPERATION, "operation2")
+            .build();
+    }
+
+    public static Collection<ModelElement> createTransformedModelWithOnPageRefs() {
+        return new ModelBuilder()
+            .startPath(Shape.OPERATION, "operation1")
+            .startPath(Shape.OPERATION, "operation2")
+            .startPath(Shape.ON_PAGE_REF, "private1")
+            .startPath(Shape.ON_PAGE_REF, "private2")
             .build();
     }
     

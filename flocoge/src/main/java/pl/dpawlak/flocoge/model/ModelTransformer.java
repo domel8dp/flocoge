@@ -19,11 +19,16 @@ public class ModelTransformer {
     
     public Collection<ModelElement> transform() {
         LinkedList<ModelElement> transformed = new LinkedList<>();
+        int onPageRefFirstIndex = 0;
         for (ModelElement startElement : startElements) {
             ModelElement compactedBranch = compactBranch(startElement);
             if (compactedBranch != null) {
                 transformBranch(compactedBranch);
-                transformed.add(compactedBranch);
+                if (compactedBranch.shape != Shape.ON_PAGE_REF) {
+                    transformed.add(onPageRefFirstIndex++, compactedBranch);
+                } else {
+                    transformed.add(compactedBranch);
+                }
             }
         }
         return transformed;
