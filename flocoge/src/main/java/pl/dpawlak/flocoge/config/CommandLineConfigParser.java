@@ -4,26 +4,32 @@ import java.io.File;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import pl.dpawlak.flocoge.log.Logger;
+
 /**
  * Created by dpawlak on Dec 14, 2014
  */
 public class CommandLineConfigParser {
     
+    private final Logger log;
+
     private File diagramPath;
     private File srcFolder;
     private String packageName;
     private String diagramName;
     private Configuration configuration;
+    private boolean stacktrace;
+    private boolean verbose;
+    private boolean printModel;
+    private boolean trace;
+
+    public CommandLineConfigParser(Logger log) {
+        this.log = log;
+    }
     
     public boolean parse(String[] args) {
         if (args.length >= 3) {
-            boolean result = true;
-            for (int i = 0; i < args.length - 3; i++) {
-                if ("--help".equals(args[i])) {
-                    printHelp();
-                    return false;
-                }
-            }
+            boolean result = parseFlags(args);
             if (result) {
                 result = parseDiagramPath(args[args.length - 3]);
             }
@@ -34,7 +40,8 @@ public class CommandLineConfigParser {
                 result = parsePackageName(args[args.length - 1]);
             }
             if (result) {
-                configuration = new Configuration(diagramPath, srcFolder, diagramName, packageName);
+                configuration = new Configuration(diagramPath, srcFolder, diagramName, packageName, stacktrace, verbose,
+                    printModel, trace);
             }
             return result;
         } else {
@@ -57,13 +64,36 @@ public class CommandLineConfigParser {
                 convertDiagramName();
                 return true;
             } else {
-                System.err.println("Diagram file name can not be used as a Java class name (" + fileName + ")");
+                log.error("Diagram file name can not be used as a Java class name ({})", fileName);
                 return false;
             }
         } else {
-            System.err.println("Diagram file does not exist (" + path + ")");
+            log.error("Diagram file does not exist ({})", path);
             return false;
         }
+    }
+    
+    private boolean parseFlags(String[] args) {
+        for (int i = 0; i < args.length - 3; i++) {
+            String arg = args[i];
+            if ("--help".equals(arg) || "-h".equals(arg)) {
+                printHelp();
+                return false;
+            } else if ("--stacktrace".equals(arg) || "-s".equals(arg)) {
+                stacktrace = true;
+            } else if ("--verbose".equals(arg) || "-v".equals(arg)) {
+                verbose = true;
+            } else if ("--print-model".equals(arg) || "-p".equals(arg)) {
+                printModel = true;
+            } else if ("--trace".equals(arg) || "-t".equals(arg)) {
+                trace = true;
+                stacktrace = true;
+            } else {
+                log.error("Unrecognized flag: ({}), use --help to see available options", arg);
+                return false;
+            }
+        }
+        return true;
     }
     
     private boolean parseSrcFolder(String path) {
@@ -72,14 +102,14 @@ public class CommandLineConfigParser {
             if (srcFolder.isDirectory()) {
                 return true;
             } else {
-                System.err.println("Sources folder is not a directory (" + path + ")");
+                log.error("Sources folder is not a directory ({})", path);
                 return false;
             }
         } else {
             if (srcFolder.mkdirs()) {
                 return true;
             } else {
-                System.err.println("Sources folder could not be created (" + path + ")");
+                log.error("Sources folder could not be created ({})", path);
                 return false;
             }
         }
@@ -90,7 +120,7 @@ public class CommandLineConfigParser {
             packageName = name;
             return true;
         } else {
-            System.err.println("Invalid package name (" + name + ")");
+            log.error("Invalid package name ({})", name);
             return false;
         }
     }
@@ -120,11 +150,14 @@ public class CommandLineConfigParser {
     }
     
     private void printHelp() {
-        System.out.println("Draw.io Flowchart Code Generator");
-        System.out.println("Usage:");
-        System.out.println("[flags] <diagram path> <generated sources folder> <package name>");
-        System.out.println("Flags:");
-        System.out.println("--help - print this help message");
+        log.log("Draw.io Flowchart Code Generator");
+        log.log("Usage:");
+        log.log("[flags] <diagram path> <generated sources folder> <package name>");
+        log.log("Flags:");
+        log.log("--help -h : print this help message");
+        log.log("--verbose -v : print some information about execution");
+        log.log("--print-model -p : print generated model, may be useful for troubleshooting");
+        log.log("--stacktrace -s : print full stacktrace for exception");
+        log.log("--trace -t : print every step, implies --verbose and --stacktrace flags");
     }
 }
-

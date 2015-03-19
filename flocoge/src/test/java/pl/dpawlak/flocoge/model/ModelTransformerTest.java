@@ -1,9 +1,12 @@
 package pl.dpawlak.flocoge.model;
 
+import static org.mockito.Mockito.mock;
+
 import java.util.Collection;
 
 import org.junit.Test;
 
+import pl.dpawlak.flocoge.log.Logger;
 import pl.dpawlak.flocoge.model.util.ModelsMatchingValidator;
 
 /**
@@ -15,7 +18,7 @@ public class ModelTransformerTest {
     public void testFileModelTransforming() {
         Collection<ModelElement> startElements = CommonTestModels.createTestFileModel();
         Collection<ModelElement> expectedElements = CommonTestModels.createTestFileModelTransformed();
-        ModelTransformer transformer = new ModelTransformer(startElements);
+        ModelTransformer transformer = new ModelTransformer(startElements, mock(Logger.class));
         new ModelsMatchingValidator(transformer.transform(), expectedElements).validate();
     }
     
@@ -23,7 +26,7 @@ public class ModelTransformerTest {
     public void testBooleanDecisionBranchesTransforming() {
         Collection<ModelElement> startElements = CommonTestModels.createModelWithBooleanDecisionBranches();
         Collection<ModelElement> expectedElements = CommonTestModels.createTransformedModelWithBooleanDecisionBranches();
-        ModelTransformer transformer = new ModelTransformer(startElements);
+        ModelTransformer transformer = new ModelTransformer(startElements, mock(Logger.class));
         new ModelsMatchingValidator(transformer.transform(), expectedElements).validate();
     }
     
@@ -31,7 +34,7 @@ public class ModelTransformerTest {
     public void testInvertedBooleanDecisionBranchesTransforming() {
         Collection<ModelElement> startElements = CommonTestModels.createModelWithInvertedBooleanDecisionBranches();
         Collection<ModelElement> expectedElements = CommonTestModels.createTransformedModelWithInvertedBooleanDecisionBranches();
-        ModelTransformer transformer = new ModelTransformer(startElements);
+        ModelTransformer transformer = new ModelTransformer(startElements, mock(Logger.class));
         new ModelsMatchingValidator(transformer.transform(), expectedElements).validate();
     }
     
@@ -39,7 +42,7 @@ public class ModelTransformerTest {
     public void testOnPageRefsMovingToBack() {
         Collection<ModelElement> startElements = CommonTestModels.createModelWithOnPageRefs();
         Collection<ModelElement> expectedElements = CommonTestModels.createTransformedModelWithOnPageRefs();
-        ModelTransformer transformer = new ModelTransformer(startElements);
+        ModelTransformer transformer = new ModelTransformer(startElements, mock(Logger.class));
         new ModelsMatchingValidator(transformer.transform(), expectedElements).validate();
     }
     
@@ -47,7 +50,7 @@ public class ModelTransformerTest {
     public void testComplexModelTransforming() {
         Collection<ModelElement> startElements = CommonTestModels.createComplexModel();
         Collection<ModelElement> expectedElements = CommonTestModels.createTransformedComplexModel();
-        ModelTransformer transformer = new ModelTransformer(startElements);
+        ModelTransformer transformer = new ModelTransformer(startElements, mock(Logger.class));
         new ModelsMatchingValidator(transformer.transform(), expectedElements).validate();
     }
 }

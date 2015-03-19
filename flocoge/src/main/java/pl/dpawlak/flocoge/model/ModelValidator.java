@@ -7,6 +7,7 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Set;
 
+import pl.dpawlak.flocoge.log.Logger;
 import pl.dpawlak.flocoge.model.ModelElement.Shape;
 
 /**
@@ -14,18 +15,21 @@ import pl.dpawlak.flocoge.model.ModelElement.Shape;
  */
 public class ModelValidator {
     
+    private final Logger log;
     private final Collection<ModelElement> startElements;
     private final Deque<Set<String>> visitedElements;
     
     private boolean valid;
     private String error;
 
-    public ModelValidator(Collection<ModelElement> startElements) {
+    public ModelValidator(Collection<ModelElement> startElements, Logger log) {
+        this.log = log;
         this.startElements = startElements;
         visitedElements = new LinkedList<>();
     }
     
     public boolean validate() {
+        log.log("Validating model");
         valid = true;
         error = "";
         Iterator<ModelElement> startElementIterator = startElements.iterator();

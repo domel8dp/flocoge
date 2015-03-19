@@ -4,6 +4,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
 
+import pl.dpawlak.flocoge.log.Logger;
 import pl.dpawlak.flocoge.model.ModelElement.Shape;
 
 /**
@@ -11,13 +12,16 @@ import pl.dpawlak.flocoge.model.ModelElement.Shape;
  */
 public class ModelTransformer {
     
+    private final Logger log;
     private final Collection<ModelElement> startElements;
 
-    public ModelTransformer(Collection<ModelElement> startElements) {
+    public ModelTransformer(Collection<ModelElement> startElements, Logger log) {
         this.startElements = startElements;
+        this.log = log;
     }
     
     public Collection<ModelElement> transform() {
+        log.log("Compacting and transforming model");
         LinkedList<ModelElement> transformed = new LinkedList<>();
         int onPageRefFirstIndex = 0;
         for (ModelElement startElement : startElements) {
@@ -116,5 +120,4 @@ public class ModelTransformer {
         int connectionsCount = element.connections.size();
         return connectionsCount > 0 ? element.connections.get(0).target : null;
     }
-
 }

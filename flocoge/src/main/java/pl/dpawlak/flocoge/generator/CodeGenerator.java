@@ -19,6 +19,7 @@ import com.sun.codemodel.JSwitch;
 import com.sun.codemodel.JVar;
 
 import pl.dpawlak.flocoge.config.Configuration;
+import pl.dpawlak.flocoge.log.Logger;
 import pl.dpawlak.flocoge.model.ModelConnection;
 import pl.dpawlak.flocoge.model.ModelElement;
 import pl.dpawlak.flocoge.model.ModelElement.Shape;
@@ -31,6 +32,7 @@ public class CodeGenerator {
 
     private final Collection<ModelElement> model;
     private final Configuration config;
+    private final Logger log;
     private final JCodeModel codeModel;
     private final Set<String> delegateMethods;
     private final Set<String> externalDelegateMethods;
@@ -41,15 +43,17 @@ public class CodeGenerator {
     private JFieldVar delegate;
     private JFieldVar externalDelegate;
     
-    public CodeGenerator(Collection<ModelElement> model, Configuration config) {
+    public CodeGenerator(Collection<ModelElement> model, Configuration config, Logger log) {
         this.model = model;
         this.config = config;
+        this.log = log;
         codeModel = new JCodeModel();
         delegateMethods = new HashSet<>();
         externalDelegateMethods = new HashSet<>();
     }
     
     public void generate() throws CodeGenerationException {
+        log.log("Generating code");
         prepareEmptyEntities();
         fillEntities();
         build();

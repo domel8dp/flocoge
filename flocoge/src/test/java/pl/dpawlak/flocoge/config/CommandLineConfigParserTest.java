@@ -1,12 +1,15 @@
 package pl.dpawlak.flocoge.config;
 
 import static org.junit.Assert.*;
+import static org.mockito.Mockito.*;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
 
 import org.junit.Test;
+
+import pl.dpawlak.flocoge.log.Logger;
 
 /**
  * Created by dpawlak on Dec 16, 2014
@@ -26,14 +29,14 @@ public class CommandLineConfigParserTest {
     @Test
     public void testInsuficientParameters() {
         for (int i = 0; i < MIN_PARAMS; i++) {
-            CommandLineConfigParser parser = new CommandLineConfigParser();
+            CommandLineConfigParser parser = new CommandLineConfigParser(mock(Logger.class));
             assertFalse(parser.parse(Arrays.copyOf(VALID_PARAMS, i)));
         }
     }
     
     @Test
     public void testValidParameters() throws IOException {
-        CommandLineConfigParser parser = new CommandLineConfigParser();
+        CommandLineConfigParser parser = new CommandLineConfigParser(mock(Logger.class));
         assertTrue(parser.parse(VALID_PARAMS));
         Configuration config = parser.getConfiguration();
         assertNotNull(config);
@@ -44,25 +47,25 @@ public class CommandLineConfigParserTest {
     
     @Test
     public void testHelpFlag() {
-        CommandLineConfigParser parser = new CommandLineConfigParser();
+        CommandLineConfigParser parser = new CommandLineConfigParser(mock(Logger.class));
         assertFalse(parser.parse(new String[] {HELP_FLAG, VALID_DIAGRAM_PATH, VALID_SRC_FOLDER, VALID_PACKAGE_NAME}));
     }
     
     @Test
     public void testInvalidDiagramPath() {
-        CommandLineConfigParser parser = new CommandLineConfigParser();
+        CommandLineConfigParser parser = new CommandLineConfigParser(mock(Logger.class));
         assertFalse(parser.parse(new String[] {INVALID_DIAGRAM_PATH, VALID_SRC_FOLDER, VALID_PACKAGE_NAME}));
     }
     
     @Test
     public void testInvalidSrcFolder() {
-        CommandLineConfigParser parser = new CommandLineConfigParser();
+        CommandLineConfigParser parser = new CommandLineConfigParser(mock(Logger.class));
         assertFalse(parser.parse(new String[] {VALID_DIAGRAM_PATH, INVALID_SRC_FOLDER, VALID_PACKAGE_NAME}));
     }
     
     @Test
     public void testInvalidPackageName() {
-        CommandLineConfigParser parser = new CommandLineConfigParser();
+        CommandLineConfigParser parser = new CommandLineConfigParser(mock(Logger.class));
         assertFalse(parser.parse(new String[] {VALID_DIAGRAM_PATH, VALID_SRC_FOLDER, INVALID_PACKAGE_NAME}));
     }
 }

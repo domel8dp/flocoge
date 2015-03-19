@@ -21,6 +21,7 @@ import javax.xml.stream.events.StartElement;
 import javax.xml.stream.events.XMLEvent;
 
 import pl.dpawlak.flocoge.config.Configuration;
+import pl.dpawlak.flocoge.log.Logger;
 import pl.dpawlak.flocoge.model.ModelElement;
 
 /**
@@ -29,19 +30,22 @@ import pl.dpawlak.flocoge.model.ModelElement;
 public class DiagramLoader {
     
     private final Configuration config;
+    private final Logger log;
     private final ModelLoader loader;
     private final XMLInputFactory factory;
     private XMLEventReader reader;
     private StartElement startElement;
 
-    public DiagramLoader(Configuration config, ModelLoader loader) {
+    public DiagramLoader(Configuration config, ModelLoader loader, Logger log) {
         this.config = config;
+        this.log = log;
         this.loader = loader;
         factory = loader.getFactory();
     }
     
     public Collection<ModelElement> loadDiagram() throws DiagramLoadingException {
         try (FileInputStream inputStream = new FileInputStream(config.diagramPath)) {
+            log.log("Loading diagram from file: {}", config.diagramPath.getCanonicalPath());
             reader = factory.createXMLEventReader(inputStream);
             if (reader.hasNext()) {
                 startElement = reader.nextTag().asStartElement();
@@ -51,8 +55,10 @@ public class DiagramLoader {
                     reader.close();
                     String diagramData = decryptDiagram(encryptedContentElement.getData());
                     prepareXmlReader(diagramData);
+                    log.log("Loading model from diagram");
                     return loader.loadModel(reader, startElement);
                 } else if ("mxGraphModel".equals(rootName)) {
+                    log.log("Loading model from diagram");
                     return loader.loadModel(reader, startElement);
                 } else {
                     throw new DiagramLoadingException("Diagram loading error (invalid root element)");
