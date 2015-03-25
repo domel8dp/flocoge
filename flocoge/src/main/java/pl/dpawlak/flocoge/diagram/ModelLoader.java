@@ -61,6 +61,9 @@ public class ModelLoader {
             ModelElement sourceElement = elements.get(connection.sourceId);
             if (sourceElement != null) {
                 ModelElement targetElement = startElements.remove(connection.targetId);
+                if (targetElement == null) {
+                    targetElement = elements.get(connection.targetId);
+                }
                 if (targetElement != null) {
                     ModelConnection modelConnection = new ModelConnection();
                     modelConnection.label = connection.label;
