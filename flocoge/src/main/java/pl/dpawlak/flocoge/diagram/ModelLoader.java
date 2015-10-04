@@ -1,7 +1,6 @@
 package pl.dpawlak.flocoge.diagram;
 
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -36,7 +35,7 @@ public class ModelLoader {
         parser = new ModelElementParser();
         labels = new LinkedList<>();
         connections = new LinkedHashMap<>();
-        elements = new HashMap<>();
+        elements = new LinkedHashMap<>();
     }
     
     public Collection<ModelElement> loadModel(XMLEventReader reader, StartElement rootElement) throws DiagramLoadingException {
