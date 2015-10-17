@@ -11,7 +11,7 @@ public final class ModelNamesUtils {
     private ModelNamesUtils() { }
     
     public static boolean validateElementLabel(String label) {
-        return label.replaceAll("<br>", " ").matches("[^a-zA-Z]*[a-zA-Z].*");
+        return label != null && label.replaceAll("<br>", " ").matches("[^a-zA-Z]*[a-zA-Z].*");
     }
     
     public static String convertElementLabel(String label) {

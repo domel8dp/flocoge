@@ -82,6 +82,7 @@ public class ModelElementParser {
         setAttribute(connection, "id", element, "id");
         setAttribute(connection, "sourceId", element, "source");
         setAttribute(connection, "targetId", element, "target");
+        setAttribute(connection, "label", element, "value");
     }
 
     private void parseLabel(StartElement element) throws DiagramLoadingException {
