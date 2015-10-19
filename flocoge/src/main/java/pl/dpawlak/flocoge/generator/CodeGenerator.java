@@ -1,7 +1,6 @@
 package pl.dpawlak.flocoge.generator;
 
 import java.io.IOException;
-import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -19,40 +18,38 @@ import com.sun.codemodel.JSwitch;
 import com.sun.codemodel.JVar;
 
 import pl.dpawlak.flocoge.config.Configuration;
+import pl.dpawlak.flocoge.diagram.ModelNamesUtils;
 import pl.dpawlak.flocoge.log.Logger;
+import pl.dpawlak.flocoge.model.FlocogeModel;
 import pl.dpawlak.flocoge.model.ModelConnection;
 import pl.dpawlak.flocoge.model.ModelElement;
 import pl.dpawlak.flocoge.model.ModelElement.Shape;
-import pl.dpawlak.flocoge.model.ModelNamesUtils;
 
-/**
- * Created by dpawlak on Mar 1, 2015
- */
 public class CodeGenerator {
 
-    private final Collection<ModelElement> model;
     private final Configuration config;
     private final Logger log;
     private final JCodeModel codeModel;
     private final Set<String> delegateMethods;
     private final Set<String> externalDelegateMethods;
-    
+
+    private FlocogeModel model;
     private JDefinedClass interfaceClass;
     private JDefinedClass facadeClass;
     private JDefinedClass externalClass;
     private JFieldVar delegate;
     private JFieldVar externalDelegate;
-    
-    public CodeGenerator(Collection<ModelElement> model, Configuration config, Logger log) {
-        this.model = model;
+
+    public CodeGenerator(Configuration config, Logger log) {
         this.config = config;
         this.log = log;
         codeModel = new JCodeModel();
         delegateMethods = new HashSet<>();
         externalDelegateMethods = new HashSet<>();
     }
-    
-    public void generate() throws CodeGenerationException {
+
+    public void generate(FlocogeModel model) throws CodeGenerationException {
+        this.model = model;
         log.log("Generating code");
         prepareEmptyEntities();
         fillEntities();
@@ -70,7 +67,7 @@ public class CodeGenerator {
             throw new CodeGenerationException(exception);
         }
     }
-    
+
     private void generateFacadeFieldsAndConstructor() {
         String baseName = config.baseName;
         String delegateName = new StringBuilder(baseName.length())
@@ -80,7 +77,7 @@ public class CodeGenerator {
         delegate = createAndAssignFacadeField(constructor, interfaceClass, delegateName);
         externalDelegate = createAndAssignFacadeField(constructor, externalClass, delegateName + "External");
     }
-    
+
     private JFieldVar createAndAssignFacadeField(JMethod constructor, JDefinedClass modelClass, String name) {
         JVar param = constructor.param(modelClass, name);
         constructor.body().assign(JExpr.refthis(name), param);
@@ -89,7 +86,7 @@ public class CodeGenerator {
 
     private void fillEntities() throws CodeGenerationException {
         try {
-            for (ModelElement element : model) {
+            for (ModelElement element : model.startElements) {
                 JMethod method = null;
                 switch (element.shape) {
                     case ON_PAGE_REF:
@@ -110,7 +107,7 @@ public class CodeGenerator {
             throw new CodeGenerationException(exception);
         }
     }
-    
+
     private void traverseBranch(JBlock body, ModelElement startElement) throws JClassAlreadyExistsException {
         ModelElement element = startElement;
         while (element != null) {
@@ -139,7 +136,7 @@ public class CodeGenerator {
             }
         }
     }
-    
+
     private void generateDelegateCall(JBlock body, ModelElement element) {
         if (!delegateMethods.contains(element.label)) {
             interfaceClass.method(JMod.NONE, codeModel.VOID, element.label);
@@ -159,7 +156,7 @@ public class CodeGenerator {
         }
         body.invoke(externalDelegate, element.label);
     }
-    
+
     private void generateDelegateBooleanCall(JBlock body, ModelElement element) throws JClassAlreadyExistsException {
         if (!delegateMethods.contains(element.label)) {
             interfaceClass.method(JMod.NONE, codeModel.BOOLEAN, element.label);
@@ -169,7 +166,7 @@ public class CodeGenerator {
         traverseBranch(if1._then(), element.connections.get(0).target);
         traverseBranch(if1._else(), element.connections.get(1).target);
     }
-    
+
     private void generateDelegateEnumCall(JBlock body, ModelElement element) throws JClassAlreadyExistsException {
         if (!delegateMethods.contains(element.label)) {
             JDefinedClass resultEnum = interfaceClass._enum(ModelNamesUtils.createEnumName(element.label));
@@ -190,7 +187,7 @@ public class CodeGenerator {
     private ModelElement getNext(ModelElement element) {
         return element.connections.isEmpty() ? null : element.connections.get(0).target;
     }
-    
+
     private boolean isBooleanDecision(ModelElement element) {
         return element.connections.size() == 2 && element.connections.get(0).label.equals(ModelConnection.TRUE);
     }

@@ -2,11 +2,8 @@ package pl.dpawlak.flocoge.config;
 
 import java.io.File;
 
-/**
- * Created by dpawlak on Dec 14, 2014
- */
 public class Configuration {
-    
+
     public final File diagramPath;
     public final File srcFolder;
     public final String baseName;
@@ -15,7 +12,7 @@ public class Configuration {
     public final boolean verbose;
     public final boolean printModel;
     public final boolean trace;
-    
+
     public Configuration(File diagramPath, File srcFolder, String baseName, String packageName, boolean stacktrace,
             boolean verbose, boolean printModel, boolean trace) {
         this.diagramPath = diagramPath;

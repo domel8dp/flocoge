@@ -6,11 +6,8 @@ import java.util.regex.Pattern;
 
 import pl.dpawlak.flocoge.log.Logger;
 
-/**
- * Created by dpawlak on Dec 14, 2014
- */
 public class CommandLineConfigParser {
-    
+
     private final Logger log;
 
     private File diagramPath;
@@ -26,7 +23,7 @@ public class CommandLineConfigParser {
     public CommandLineConfigParser(Logger log) {
         this.log = log;
     }
-    
+
     public boolean parse(String[] args) {
         if (args.length >= 3) {
             boolean result = parseFlags(args);
@@ -53,7 +50,7 @@ public class CommandLineConfigParser {
     public Configuration getConfiguration() {
         return configuration;
     }
-    
+
     private boolean parseDiagramPath(String path) {
         diagramPath = new File(path);
         if (diagramPath.exists() && diagramPath.isFile()) {
@@ -72,7 +69,7 @@ public class CommandLineConfigParser {
             return false;
         }
     }
-    
+
     private boolean parseFlags(String[] args) {
         for (int i = 0; i < args.length - 3; i++) {
             String arg = args[i];
@@ -95,7 +92,7 @@ public class CommandLineConfigParser {
         }
         return true;
     }
-    
+
     private boolean parseSrcFolder(String path) {
         srcFolder = new File(path);
         if (srcFolder.exists()) {
@@ -114,7 +111,7 @@ public class CommandLineConfigParser {
             }
         }
     }
-    
+
     private boolean parsePackageName(String name) {
         if (name.matches("[a-z]{2,3}(\\.[a-zA-Z][a-zA-Z_$0-9]*)*")) {
             packageName = name;
@@ -124,7 +121,7 @@ public class CommandLineConfigParser {
             return false;
         }
     }
-    
+
     private void convertDiagramName() {
         String[] parts = diagramName.replaceAll("\\W", " ").trim().split(" ");
         StringBuilder nameBuilder = new StringBuilder();
@@ -148,7 +145,7 @@ public class CommandLineConfigParser {
             diagramName = nameBuilder.toString();
         }
     }
-    
+
     private void printHelp() {
         log.log("Draw.io Flowchart Code Generator");
         log.log("Usage:");

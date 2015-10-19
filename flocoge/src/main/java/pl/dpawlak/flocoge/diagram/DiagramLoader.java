@@ -7,7 +7,6 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
-import java.util.Collection;
 import java.util.zip.Inflater;
 import java.util.zip.InflaterOutputStream;
 
@@ -22,17 +21,15 @@ import javax.xml.stream.events.XMLEvent;
 
 import pl.dpawlak.flocoge.config.Configuration;
 import pl.dpawlak.flocoge.log.Logger;
-import pl.dpawlak.flocoge.model.ModelElement;
+import pl.dpawlak.flocoge.model.FlocogeModel;
 
-/**
- * Created by dpawlak on Dec 17, 2014
- */
 public class DiagramLoader {
-    
+
     private final Configuration config;
     private final Logger log;
     private final ModelLoader loader;
     private final XMLInputFactory factory;
+
     private XMLEventReader reader;
     private StartElement startElement;
 
@@ -42,8 +39,8 @@ public class DiagramLoader {
         this.loader = loader;
         factory = loader.getFactory();
     }
-    
-    public Collection<ModelElement> loadDiagram() throws DiagramLoadingException {
+
+    public void loadDiagram(FlocogeModel model) throws DiagramLoadingException {
         try (FileInputStream inputStream = new FileInputStream(config.diagramPath)) {
             log.log("Loading diagram from file: {}", config.diagramPath.getCanonicalPath());
             reader = factory.createXMLEventReader(inputStream);
@@ -56,10 +53,10 @@ public class DiagramLoader {
                     String diagramData = decryptDiagram(encryptedContentElement.getData());
                     prepareXmlReader(diagramData);
                     log.log("Loading model from diagram");
-                    return loader.loadModel(reader, startElement);
+                    loader.loadModel(model, reader, startElement);
                 } else if ("mxGraphModel".equals(rootName)) {
                     log.log("Loading model from diagram");
-                    return loader.loadModel(reader, startElement);
+                    loader.loadModel(model, reader, startElement);
                 } else {
                     throw new DiagramLoadingException("Diagram loading error (invalid root element)");
                 }
@@ -92,13 +89,13 @@ public class DiagramLoader {
             throw new DiagramLoadingException(ex);
         }
     }
-    
+
     private String decryptDiagram(String content) throws DiagramLoadingException {
         byte[] data = decryptBase64(content);
         String inflatedData = inflateData(data);
         return decodeUrlString(inflatedData);
     }
-    
+
     private void prepareXmlReader(String data) throws DiagramLoadingException {
         ByteArrayInputStream inputStream = new ByteArrayInputStream(data.getBytes(StandardCharsets.UTF_8));
         try {
@@ -116,7 +113,7 @@ public class DiagramLoader {
             throw new DiagramLoadingException(ex);
         }
     }
-    
+
     private byte[] decryptBase64(String content) throws DiagramLoadingException {
         try {
             return DatatypeConverter.parseBase64Binary(content);
@@ -124,7 +121,7 @@ public class DiagramLoader {
             throw new DiagramLoadingException(ex);
         }
     }
-    
+
     private String inflateData(byte[] data) throws DiagramLoadingException {
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream(data.length * 2);
         try (InflaterOutputStream inflaterStream = new InflaterOutputStream(outputStream, new Inflater(true))) {
@@ -134,7 +131,7 @@ public class DiagramLoader {
             throw new DiagramLoadingException(ex);
         }
     }
-    
+
     private String decodeUrlString(String data) throws DiagramLoadingException {
         try {
             return URLDecoder.decode(data, StandardCharsets.UTF_8.name());
@@ -142,7 +139,7 @@ public class DiagramLoader {
             throw new DiagramLoadingException(ex);
         }
     }
-    
+
     private static class DiagramElementFilter implements EventFilter {
 
         @Override

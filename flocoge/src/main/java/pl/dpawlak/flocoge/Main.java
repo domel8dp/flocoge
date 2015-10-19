@@ -1,7 +1,6 @@
 package pl.dpawlak.flocoge;
 
 import java.lang.Thread.UncaughtExceptionHandler;
-import java.util.Collection;
 
 import javax.xml.stream.XMLInputFactory;
 
@@ -10,16 +9,13 @@ import pl.dpawlak.flocoge.config.Configuration;
 import pl.dpawlak.flocoge.diagram.DiagramLoader;
 import pl.dpawlak.flocoge.diagram.DiagramLoadingException;
 import pl.dpawlak.flocoge.diagram.ModelLoader;
+import pl.dpawlak.flocoge.diagram.ModelTransformer;
+import pl.dpawlak.flocoge.diagram.ModelValidator;
 import pl.dpawlak.flocoge.generator.CodeGenerationException;
 import pl.dpawlak.flocoge.generator.CodeGenerator;
 import pl.dpawlak.flocoge.log.Logger;
-import pl.dpawlak.flocoge.model.ModelElement;
-import pl.dpawlak.flocoge.model.ModelTransformer;
-import pl.dpawlak.flocoge.model.ModelValidator;
+import pl.dpawlak.flocoge.model.FlocogeModel;
 
-/**
- * Created by dpawlak on Dec 14, 2014
- */
 public class Main {
 
     public static void main(String[] args) {
@@ -29,16 +25,17 @@ public class Main {
             Configuration config = parser.getConfiguration();
             Logger log = Logger.Factory.create(config);
             try {
+                FlocogeModel model = new FlocogeModel();
                 ModelLoader modelLoader = new ModelLoader(XMLInputFactory.newInstance());
                 DiagramLoader diagramLoader = new DiagramLoader(config, modelLoader, log);
-                Collection<ModelElement> model = diagramLoader.loadDiagram();
-                ModelValidator validator = new ModelValidator(model, log);
-                if (validator.validate()) {
-                    ModelTransformer transformer = new ModelTransformer(model, log);
-                    model = transformer.transform();
+                diagramLoader.loadDiagram(model);
+                ModelValidator validator = new ModelValidator(log);
+                if (validator.validate(model)) {
+                    ModelTransformer transformer = new ModelTransformer(log);
+                    transformer.transform(model);
                     log.printModel(model);
-                    CodeGenerator generator = new CodeGenerator(model, config, log);
-                    generator.generate();
+                    CodeGenerator generator = new CodeGenerator(config, log);
+                    generator.generate(model);
                 } else {
                     log.error("Model validation failed ({})", validator.getError());
                     System.exit(1);
@@ -54,7 +51,7 @@ public class Main {
             System.exit(1);
         }
     }
-    
+
     private static Logger init() {
         final Logger startupLogger = Logger.Factory.createStartupLogger();
         Thread.currentThread().setUncaughtExceptionHandler(new UncaughtExceptionHandler() {

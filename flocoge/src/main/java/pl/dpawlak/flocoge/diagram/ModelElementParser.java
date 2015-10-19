@@ -7,19 +7,16 @@ import javax.xml.stream.events.StartElement;
 import pl.dpawlak.flocoge.model.ModelElement;
 import pl.dpawlak.flocoge.model.ModelElement.Shape;
 
-/**
- * Created by dpawlak on Jan 5, 2015
- */
 public class ModelElementParser {
-    
+
     public enum ElementType {ELEMENT, CONNECTION, LABEL, UNKNOWN}
-    
+
     private ModelElement modelElement;
     private Connection connection;
     private Label label;
-    
+
     public ModelElementParser() { }
-    
+
     public ElementType parseNextElement(StartElement element) throws DiagramLoadingException {
         clearInternalState();
         String style = element.getAttributeByName(QName.valueOf("style")).getValue();
@@ -43,21 +40,21 @@ public class ModelElementParser {
     public ModelElement getModelElement() {
         return modelElement;
     }
-    
+
     public Connection getConnection() {
         return connection;
     }
-    
+
     public Label getLabel() {
         return label;
     }
-    
+
     private void clearInternalState() {
         modelElement = null;
         connection = null;
         label = null;
     }
-    
+
     private ElementType checkType(StartElement element, String style) {
         if (style.contains("shape=")) {
             return ElementType.ELEMENT;
@@ -69,7 +66,7 @@ public class ModelElementParser {
             return ElementType.UNKNOWN;
         }
     }
-    
+
     private void parseElement(StartElement element, String style) throws DiagramLoadingException {
         modelElement = new ModelElement();
         setAttribute(modelElement, "id", element, "id");
@@ -90,7 +87,7 @@ public class ModelElementParser {
         setAttribute(label, "parentId", element, "parent");
         setAttribute(label, "value", element, "value");
     }
-    
+
     private void setAttribute(Object object, String fieldName, StartElement element, String attributeName)
             throws DiagramLoadingException {
         Attribute attribute = element.getAttributeByName(QName.valueOf(attributeName));
@@ -122,14 +119,14 @@ public class ModelElementParser {
             modelElement.shape = Shape.SKIP;
         }
     }
-    
+
     public static class Connection {
         public String id;
         public String sourceId;
         public String targetId;
         public String label;
     }
-    
+
     public static class Label {
         public String parentId;
         public String value;

@@ -5,22 +5,20 @@ import static org.junit.Assert.*;
 import java.util.Collection;
 import java.util.Iterator;
 
+import pl.dpawlak.flocoge.model.FlocogeModel;
 import pl.dpawlak.flocoge.model.ModelConnection;
 import pl.dpawlak.flocoge.model.ModelElement;
 
-/**
- * Created by dpawlak on Jan 8, 2015
- */
 public class ModelsMatchingValidator {
-    
+
     private final Collection<ModelElement> elements;
     private final Collection<ModelElement> expectedElements;
-    
-    public ModelsMatchingValidator(Collection<ModelElement> elements, Collection<ModelElement> expectedElements) {
-        this.elements = elements;
-        this.expectedElements = expectedElements;
+
+    public ModelsMatchingValidator(FlocogeModel model, FlocogeModel expectedModel) {
+        elements = model.startElements;
+        expectedElements = expectedModel.startElements;
     }
-    
+
     public void validate() {
         assertEquals(expectedElements.size(), elements.size());
         Iterator<ModelElement> expectedElementsIt = expectedElements.iterator();
@@ -29,7 +27,7 @@ public class ModelsMatchingValidator {
             compareElements(expectedElementsIt.next(), elementsIt.next());
         }
     }
-    
+
     private void compareElements(ModelElement expectedElement, ModelElement element) {
         ModelElement expected = expectedElement;
         ModelElement actual = element;

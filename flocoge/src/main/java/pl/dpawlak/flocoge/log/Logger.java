@@ -1,35 +1,30 @@
 package pl.dpawlak.flocoge.log;
 
-import java.util.Collection;
-
 import pl.dpawlak.flocoge.config.Configuration;
-import pl.dpawlak.flocoge.model.ModelElement;
+import pl.dpawlak.flocoge.model.FlocogeModel;
 
-/**
- * Created by dpawlak on Mar 17, 2015
- */
 public interface Logger {
 
     void error(String msg);
-    
+
     void error(String msg, Object... objects);
-    
+
     void log(String msg);
-    
+
     void log(String msg, Object... objects);
-    
+
     void trace(String msg);
-    
+
     void trace(String msg, Object... objects);
-    
-    void printModel(Collection<ModelElement> model);
-    
+
+    void printModel(FlocogeModel model);
+
     public static class Factory {
-        
+
         public static Logger createStartupLogger() {
             return new VerboseLogger(true, null);
         }
-        
+
         public static Logger create(Configuration config) {
             ModelPrinter modelPrinter = null;
             if (config.printModel) {
@@ -44,9 +39,9 @@ public interface Logger {
             }
         }
     }
-    
+
     public static class Formatter {
-        
+
         public static String buildMsg(String msg, Object... objects) {
             String[] parts = msg.split("\\{\\}", objects.length + 1);
             StringBuilder sb = new StringBuilder(2 * msg.length());

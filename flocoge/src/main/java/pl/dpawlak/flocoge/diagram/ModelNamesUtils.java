@@ -1,19 +1,16 @@
-package pl.dpawlak.flocoge.model;
+package pl.dpawlak.flocoge.diagram;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-/**
- * Created by dpawlak on Jan 30, 2015
- */
 public final class ModelNamesUtils {
-    
+
     private ModelNamesUtils() { }
-    
+
     public static boolean validateElementLabel(String label) {
         return label != null && label.replaceAll("<br>", " ").matches("[^a-zA-Z]*[a-zA-Z].*");
     }
-    
+
     public static String convertElementLabel(String label) {
         String[] parts = label.replaceAll("<br>|\\W", " ").trim().split(" ");
         StringBuilder nameBuilder = new StringBuilder();
@@ -40,7 +37,7 @@ public final class ModelNamesUtils {
             return name;
         }
     }
-    
+
     public static String convertConnectionLabel(String label) {
         String[] parts = label.replaceAll("<br>|\\W", " ").trim().split(" ");
         StringBuilder nameBuilder = new StringBuilder();

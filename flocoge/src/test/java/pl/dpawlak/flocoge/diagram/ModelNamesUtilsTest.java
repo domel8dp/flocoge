@@ -1,20 +1,19 @@
-package pl.dpawlak.flocoge.model;
+package pl.dpawlak.flocoge.diagram;
 
 import static org.junit.Assert.*;
 
 import org.junit.Test;
 
-/**
- * Created by dpawlak on Jan 30, 2015
- */
+import pl.dpawlak.flocoge.diagram.ModelNamesUtils;
+
 public class ModelNamesUtilsTest {
-    
+
     private static final String[] VALID_LABELS = {"a", "a<br>valid label<br>", " does tHis Work!? ", " 5@Times", "#3C", "16 64bit words", "a camelCase call", "isOk"};
     private static final String[] VALID_NAMES = {"a", "aValidLabel", "doesTHisWork", "times_5", "c_3", "bitWords_1664", "aCamelCaseCall", "isOk"};
     private static final String[] VALID_BRANCH_NAMES = {"A", "A_VALID_LABEL", "DOES_THIS_WORK", "TIMES_5", "C_3", "BIT_WORDS_16_64", "A_CAMELCASE_CALL", "ISOK"};
     private static final String[] INVALID_LABELS = {" <br> ", "#!", " ", "", "@3"};
     private static final String[] ENUM_NAMES = {"AResult", "AValidLabelResult", "DoesTHisWorkResult", "Times_5Result", "C_3Result", "BitWords_1664Result", "ACamelCaseCallResult", "IsOkResult"};
-    
+
     @Test
     public void testValidLabels() {
         for (int i = 0; i < VALID_LABELS.length; i++) {
@@ -23,7 +22,7 @@ public class ModelNamesUtilsTest {
             assertEquals(VALID_BRANCH_NAMES[i], ModelNamesUtils.convertConnectionLabel(VALID_LABELS[i]));
         }
     }
-    
+
     @Test
     public void testInvalidLabels() {
         for (int i = 0; i < INVALID_LABELS.length; i++) {

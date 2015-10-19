@@ -1,68 +1,79 @@
-package pl.dpawlak.flocoge.model;
+package pl.dpawlak.flocoge.diagram;
 
-import java.util.Collection;
-import java.util.Deque;
-import java.util.HashSet;
+import java.util.HashMap;
 import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.Set;
+import java.util.Map;
 
 import pl.dpawlak.flocoge.log.Logger;
+import pl.dpawlak.flocoge.model.DecissionMeta;
+import pl.dpawlak.flocoge.model.FlocogeModel;
+import pl.dpawlak.flocoge.model.ModelConnection;
+import pl.dpawlak.flocoge.model.ModelElement;
 import pl.dpawlak.flocoge.model.ModelElement.Shape;
 
-/**
- * Created by dpawlak on Jan 16, 2015
- */
 public class ModelValidator {
-    
+
     private final Logger log;
-    private final Collection<ModelElement> startElements;
-    private final Deque<Set<String>> visitedElements;
-    
+
+    private FlocogeModel model;
     private boolean valid;
     private String error;
 
-    public ModelValidator(Collection<ModelElement> startElements, Logger log) {
+    public ModelValidator(Logger log) {
         this.log = log;
-        this.startElements = startElements;
-        visitedElements = new LinkedList<>();
     }
-    
-    public boolean validate() {
+
+    public boolean validate(FlocogeModel model) {
+        this.model = model;
         log.log("Validating model");
         valid = true;
         error = "";
-        Iterator<ModelElement> startElementIterator = startElements.iterator();
+        Iterator<ModelElement> startElementIterator = model.startElements.iterator();
         while (valid && startElementIterator.hasNext()) {
-            visitedElements.clear();
-            visitedElements.add(new HashSet<String>());
-            traverseBranch(startElementIterator.next());
+            ModelElement startElement = startElementIterator.next();
+            addDecissionMeta(startElement, 1);
+            Map<String, Integer> branches = addBranch(new HashMap<String, Integer>(), startElement, 0);
+            traverseBranch(startElement, branches);
         }
         return valid;
     }
-    
-    private void traverseBranch(ModelElement startElement) {
-        Set<String> thisBranchElements = visitedElements.getLast();
+
+    private Map<String, Integer> addBranch(Map<String, Integer> currentBranches, ModelElement element, int branchIndex) {
+        Map<String, Integer> branches = new HashMap<>(currentBranches);
+        if (element != null) {
+            branches.put(element.id, branchIndex);
+        }
+        return branches;
+    }
+
+    private void addDecissionMeta(ModelElement element, int branchCount) {
+        if (element != null) {
+            model.decissions.put(element.id, new DecissionMeta(element.id, branchCount));
+        }
+    }
+
+    private void traverseBranch(ModelElement startElement, Map<String, Integer> currentBranches) {
         ModelElement element = startElement;
         while (valid && element != null) {
             element = skipUnimportant(element);
-            if (valid && element != null && !alreadyVisited(element)) {
-                thisBranchElements.add(element.id);
-                if (element.shape == Shape.DECISION) {
+            if (valid && element != null) {
+                checkBranches(element, currentBranches);
+                if (valid && element.shape == Shape.DECISION) {
                     if (checkDecision(element)) {
+                        addDecissionMeta(element, element.connections.size());
                         Iterator<ModelConnection> connectionsIterator = element.connections.iterator();
+                        int branchIndex = 0;
                         while (valid && connectionsIterator.hasNext()) {
-                            visitedElements.add(new HashSet<String>());
-                            traverseBranch(connectionsIterator.next().target);
+                            Map<String, Integer> newBranches = addBranch(currentBranches, element, branchIndex++);
+                            traverseBranch(connectionsIterator.next().target, newBranches);
                         }
                         element = null;
                     }
-                } else if (checkElement(element)) {
+                } else if (valid && checkElement(element)) {
                     element = getNextElement(element);
                 }
             }
         }
-        visitedElements.removeLast();
     }
 
     private ModelElement skipUnimportant(ModelElement element) {
@@ -72,16 +83,18 @@ public class ModelValidator {
         }
         return nextElement;
     }
-    
-    private boolean alreadyVisited(ModelElement element) {
-        Iterator<Set<String>> visitedElementsIterator = visitedElements.descendingIterator();
-        while (visitedElementsIterator.hasNext()) {
-            if (visitedElementsIterator.next().contains(element.id)) {
-                setError("Diagram error (element '" + element.label + "' is part of a loop)");
-                return true;
+
+    private void checkBranches(ModelElement element, Map<String, Integer> currentBranches) {
+        Iterator<Map.Entry<String, Integer>> branchesIterator = currentBranches.entrySet().iterator();
+        while (valid && branchesIterator.hasNext()) {
+            Map.Entry<String, Integer> branch = branchesIterator.next();
+            MergePointsImpl impl = new MergePointsImpl(model, element, branch.getKey(), branch.getValue(),
+                currentBranches);
+            new MergePointsFacade(impl, null).inspectNode();
+            if (!impl.isValid()) {
+                setError(impl.getError());
             }
         }
-        return false;
     }
 
     private boolean checkElement(ModelElement element) {
@@ -92,7 +105,7 @@ public class ModelValidator {
             return true;
         }
     }
-    
+
     private boolean checkDecision(ModelElement element) {
         if (element.connections.size() <= 1) {
             setError("Diagram error (decision element '" + element.label + "' does not have enough branches)");
@@ -104,7 +117,7 @@ public class ModelValidator {
             return false;
         }
     }
-    
+
     private boolean checkDecisionBranches(ModelElement element) {
         for(ModelConnection connection : element.connections) {
             if (!ModelNamesUtils.validateElementLabel(connection.label)) {
@@ -115,7 +128,7 @@ public class ModelValidator {
         }
         return true;
     }
-    
+
     private ModelElement getNextElement(ModelElement element) {
         int connectionsCount = element.connections.size();
         if (connectionsCount <= 1) {
@@ -125,7 +138,7 @@ public class ModelValidator {
             return null;
         }
     }
-    
+
     private void setError(String error) {
         valid = false;
         this.error = error;
@@ -134,5 +147,4 @@ public class ModelValidator {
     public String getError() {
         return error;
     }
-
 }

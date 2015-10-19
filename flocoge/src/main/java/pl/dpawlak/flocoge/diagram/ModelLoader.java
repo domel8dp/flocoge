@@ -1,6 +1,5 @@
 package pl.dpawlak.flocoge.diagram;
 
-import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -16,32 +15,32 @@ import javax.xml.stream.events.XMLEvent;
 
 import pl.dpawlak.flocoge.diagram.ModelElementParser.Connection;
 import pl.dpawlak.flocoge.diagram.ModelElementParser.Label;
+import pl.dpawlak.flocoge.model.FlocogeModel;
 import pl.dpawlak.flocoge.model.ModelConnection;
 import pl.dpawlak.flocoge.model.ModelElement;
 
-/**
- * Created by dpawlak on Dec 20, 2014
- */
 public class ModelLoader {
-    
+
     private final XMLInputFactory factory;
     private final ModelElementParser parser;
     private final List<Label> labels;
     private final Map<String, Connection> connections;
-    private final Map<String, ModelElement> elements;
-    
+
+    private FlocogeModel model;
+
     public ModelLoader(XMLInputFactory factory) {
         this.factory = factory;
         parser = new ModelElementParser();
         labels = new LinkedList<>();
         connections = new LinkedHashMap<>();
-        elements = new LinkedHashMap<>();
     }
-    
-    public Collection<ModelElement> loadModel(XMLEventReader reader, StartElement rootElement) throws DiagramLoadingException {
+
+    public void loadModel(FlocogeModel model, XMLEventReader reader, StartElement rootElement)
+            throws DiagramLoadingException {
+        this.model = model;
         parseElements(reader, rootElement);
         assignLabelsToConnections();
-        return connectElements();
+        connectElements();
     }
 
     private void assignLabelsToConnections() {
@@ -53,15 +52,15 @@ public class ModelLoader {
         }
         labels.clear();
     }
-    
-    private Collection<ModelElement> connectElements() {
-        Map<String, ModelElement> startElements = new LinkedHashMap<>(elements);
+
+    private void connectElements() {
+        Map<String, ModelElement> startElements = new LinkedHashMap<>(model.elements);
         for (Connection connection : connections.values()) {
-            ModelElement sourceElement = elements.get(connection.sourceId);
+            ModelElement sourceElement = model.elements.get(connection.sourceId);
             if (sourceElement != null) {
                 ModelElement targetElement = startElements.remove(connection.targetId);
                 if (targetElement == null) {
-                    targetElement = elements.get(connection.targetId);
+                    targetElement = model.elements.get(connection.targetId);
                 }
                 if (targetElement != null) {
                     ModelConnection modelConnection = new ModelConnection();
@@ -72,8 +71,7 @@ public class ModelLoader {
             }
         }
         connections.clear();
-        elements.clear();
-        return startElements.values();
+        model.startElements.addAll(startElements.values());
     }
 
     private void parseElements(XMLEventReader reader, StartElement rootElement) throws DiagramLoadingException {
@@ -86,12 +84,12 @@ public class ModelLoader {
             throw new DiagramLoadingException(ex);
         }
     }
-    
+
     private void parseElement(StartElement element) throws DiagramLoadingException {
         switch (parser.parseNextElement(element)) {
             case ELEMENT:
                 ModelElement modelElement = parser.getModelElement();
-                elements.put(modelElement.id, modelElement);
+                model.elements.put(modelElement.id, modelElement);
                 break;
             case CONNECTION:
                 Connection connection = parser.getConnection();
@@ -108,7 +106,7 @@ public class ModelLoader {
     public XMLInputFactory getFactory() {
         return factory;
     }
-    
+
     private static class MxCellElementFilter implements EventFilter {
 
         @Override
@@ -122,5 +120,4 @@ public class ModelLoader {
             }
         }
     }
-
 }

@@ -1,8 +1,5 @@
 package pl.dpawlak.flocoge.log;
 
-/**
- * Created by dpawlak on Mar 17, 2015
- */
 public class VerboseLogger extends ErrorLogger {
 
     public VerboseLogger(boolean printStack, ModelPrinter modelPrinter) {

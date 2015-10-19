@@ -1,19 +1,15 @@
 package pl.dpawlak.flocoge.log;
 
-import java.util.Collection;
-
+import pl.dpawlak.flocoge.model.FlocogeModel;
 import pl.dpawlak.flocoge.model.ModelConnection;
 import pl.dpawlak.flocoge.model.ModelElement;
 import pl.dpawlak.flocoge.model.ModelElement.Shape;
 
-/**
- * Created by dpawlak on Mar 19, 2015
- */
 public class ModelPrinter {
 
-    public void print(Collection<ModelElement> model) {
+    public void print(FlocogeModel model) {
         System.out.println("Diagram model:");
-        for (ModelElement element : model) {
+        for (ModelElement element : model.startElements) {
             System.out.println("START PATH");
             traverseBranch(element, 1);
         }

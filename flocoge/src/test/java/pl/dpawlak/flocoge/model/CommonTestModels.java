@@ -1,18 +1,13 @@
 package pl.dpawlak.flocoge.model;
 
-import java.util.Collection;
-
 import pl.dpawlak.flocoge.model.ModelElement.Shape;
 import pl.dpawlak.flocoge.model.util.ModelBuilder;
 
-/**
- * Created by dpawlak on Feb 25, 2015
- */
 public class CommonTestModels {
-    
+
     private static final String INVALID_LABEL = "?";
-    
-    public static Collection<ModelElement> createTestFileModel() {
+
+    public static FlocogeModel createTestFileModel() {
         return new ModelBuilder()
             .startPath(Shape.SKIP, "start")
                 .connectElement(Shape.EVENT, "input<br>available<br>")
@@ -43,8 +38,8 @@ public class CommonTestModels {
                 .connectElement(Shape.SKIP, "end")
             .build();
     }
-    
-    public static Collection<ModelElement> createTestFileModelTransformed() {
+
+    public static FlocogeModel createTestFileModelTransformed() {
         return new ModelBuilder()
             .startPath(Shape.EVENT, "inputAvailable")
                 .connectElement(Shape.OPERATION, "performAction")
@@ -72,8 +67,8 @@ public class CommonTestModels {
                 .connectElement(Shape.OPERATION, "showErrorMesage")
             .build();
     }
-    
-    public static Collection<ModelElement> createModelWithLoop() {
+
+    public static FlocogeModel createModelWithLoop() {
         return new ModelBuilder()
             .startPath(Shape.ON_PAGE_REF, "handle error<br>")
             .markBookmark("LOOP")
@@ -81,8 +76,8 @@ public class CommonTestModels {
             .connectBookmark("LOOP")
             .build();
     }
-    
-    public static Collection<ModelElement> createModelWithInvalidBranches() {
+
+    public static FlocogeModel createModelWithInvalidBranches() {
         return new ModelBuilder()
             .startPath(Shape.EVENT, "user action<br>")
                 .connectElement(Shape.OPERATION, "perform<br>defined<br>action<br>")
@@ -94,20 +89,20 @@ public class CommonTestModels {
                         .end()
             .build();
     }
-    
-    public static Collection<ModelElement> createModelWithInvalidDecisionBranches() {
+
+    public static FlocogeModel createModelWithInvalidDecisionBranches() {
         return new ModelBuilder()
             .startPath(Shape.EVENT, "user action<br>")
                 .connectElement(Shape.DECISION, "perform<br>defined<br>action<br>")
                 .connectElement(Shape.OFF_PAGE_REF, "process normal<br>user request<br>", "normal")
             .build();
     }
-    
-    public static Collection<ModelElement> createModelWithInvalidElementLabel() {
+
+    public static FlocogeModel createModelWithInvalidElementLabel() {
         return new ModelBuilder().startPath(Shape.ON_PAGE_REF, INVALID_LABEL).build();
     }
 
-    public static Collection<ModelElement> createModelWithInvalidDecisionLabel() {
+    public static FlocogeModel createModelWithInvalidDecisionLabel() {
         return new ModelBuilder()
             .startPath(Shape.DECISION, INVALID_LABEL)
                 .branch()
@@ -119,7 +114,7 @@ public class CommonTestModels {
             .build();
     }
 
-    public static Collection<ModelElement> createModelWithInvalidDecisionBranchLabel() {
+    public static FlocogeModel createModelWithInvalidDecisionBranchLabel() {
         return new ModelBuilder()
             .startPath(Shape.DECISION, "isOk")
                 .branch()
@@ -131,7 +126,7 @@ public class CommonTestModels {
             .build();
     }
 
-    public static Collection<ModelElement> createModelWithBooleanDecisionBranches() {
+    public static FlocogeModel createModelWithBooleanDecisionBranches() {
         return new ModelBuilder()
             .startPath(Shape.DECISION, "isOk")
                 .branch()
@@ -143,7 +138,7 @@ public class CommonTestModels {
             .build();
     }
 
-    public static Collection<ModelElement> createTransformedModelWithBooleanDecisionBranches() {
+    public static FlocogeModel createTransformedModelWithBooleanDecisionBranches() {
         return new ModelBuilder()
             .startPath(Shape.DECISION, "isOk")
                 .branch()
@@ -155,7 +150,7 @@ public class CommonTestModels {
             .build();
     }
 
-    public static Collection<ModelElement> createModelWithInvertedBooleanDecisionBranches() {
+    public static FlocogeModel createModelWithInvertedBooleanDecisionBranches() {
         return new ModelBuilder()
             .startPath(Shape.DECISION, "isOk")
                 .branch()
@@ -167,7 +162,7 @@ public class CommonTestModels {
             .build();
     }
 
-    public static Collection<ModelElement> createTransformedModelWithInvertedBooleanDecisionBranches() {
+    public static FlocogeModel createTransformedModelWithInvertedBooleanDecisionBranches() {
         return new ModelBuilder()
             .startPath(Shape.DECISION, "isOk")
                 .branch()
@@ -179,7 +174,7 @@ public class CommonTestModels {
             .build();
     }
 
-    public static Collection<ModelElement> createModelWithOnPageRefs() {
+    public static FlocogeModel createModelWithOnPageRefs() {
         return new ModelBuilder()
             .startPath(Shape.ON_PAGE_REF, "private1")
             .startPath(Shape.OPERATION, "operation1")
@@ -188,7 +183,7 @@ public class CommonTestModels {
             .build();
     }
 
-    public static Collection<ModelElement> createTransformedModelWithOnPageRefs() {
+    public static FlocogeModel createTransformedModelWithOnPageRefs() {
         return new ModelBuilder()
             .startPath(Shape.OPERATION, "operation1")
             .startPath(Shape.OPERATION, "operation2")
@@ -196,8 +191,8 @@ public class CommonTestModels {
             .startPath(Shape.ON_PAGE_REF, "private2")
             .build();
     }
-    
-    public static Collection<ModelElement> createComplexModel() {
+
+    public static FlocogeModel createComplexModel() {
         return new ModelBuilder()
             .startPath(Shape.SKIP, "start")
                 .connectElement(Shape.DECISION, "are there saved devices ?")
@@ -243,8 +238,8 @@ public class CommonTestModels {
                         .end()
             .build();
     }
-    
-    public static Collection<ModelElement> createTransformedComplexModel() {
+
+    public static FlocogeModel createTransformedComplexModel() {
         return new ModelBuilder()
             .startPath(Shape.DECISION, "areThereSavedDevices")
                 .branch()

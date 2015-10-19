@@ -1,12 +1,7 @@
 package pl.dpawlak.flocoge.log;
 
-import java.util.Collection;
+import pl.dpawlak.flocoge.model.FlocogeModel;
 
-import pl.dpawlak.flocoge.model.ModelElement;
-
-/**
- * Created by dpawlak on Mar 17, 2015
- */
 public class ErrorLogger implements Logger {
 
     private final boolean printStack;
@@ -34,7 +29,7 @@ public class ErrorLogger implements Logger {
     }
 
     @Override
-    public void printModel(Collection<ModelElement> model) {
+    public void printModel(FlocogeModel model) {
         if (modelPrinter != null) {
             modelPrinter.print(model);
         }

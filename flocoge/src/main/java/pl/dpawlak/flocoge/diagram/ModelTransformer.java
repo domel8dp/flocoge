@@ -1,30 +1,27 @@
-package pl.dpawlak.flocoge.model;
+package pl.dpawlak.flocoge.diagram;
 
-import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
 
 import pl.dpawlak.flocoge.log.Logger;
+import pl.dpawlak.flocoge.model.FlocogeModel;
+import pl.dpawlak.flocoge.model.ModelConnection;
+import pl.dpawlak.flocoge.model.ModelElement;
 import pl.dpawlak.flocoge.model.ModelElement.Shape;
 
-/**
- * Created by dpawlak on Feb 25, 2015
- */
 public class ModelTransformer {
-    
-    private final Logger log;
-    private final Collection<ModelElement> startElements;
 
-    public ModelTransformer(Collection<ModelElement> startElements, Logger log) {
-        this.startElements = startElements;
+    private final Logger log;
+
+    public ModelTransformer(Logger log) {
         this.log = log;
     }
-    
-    public Collection<ModelElement> transform() {
+
+    public void transform(FlocogeModel model) {
         log.log("Compacting and transforming model");
         LinkedList<ModelElement> transformed = new LinkedList<>();
         int onPageRefFirstIndex = 0;
-        for (ModelElement startElement : startElements) {
+        for (ModelElement startElement : model.startElements) {
             ModelElement compactedBranch = compactBranch(startElement);
             if (compactedBranch != null) {
                 transformBranch(compactedBranch);
@@ -35,9 +32,10 @@ public class ModelTransformer {
                 }
             }
         }
-        return transformed;
+        model.startElements.clear();
+        model.startElements.addAll(transformed);
     }
-    
+
     private ModelElement compactBranch(ModelElement startElement) {
         ModelElement compactedStartElement = skipUnimportant(startElement);
         ModelElement element = compactedStartElement;
@@ -58,7 +56,7 @@ public class ModelTransformer {
         }
         return compactedStartElement;
     }
-    
+
     private void transformBranch(ModelElement startElement) {
         ModelElement element = startElement;
         while (element != null) {
@@ -86,19 +84,19 @@ public class ModelTransformer {
     private void transformElement(ModelElement element) {
         element.label = ModelNamesUtils.convertElementLabel(element.label);
     }
-    
+
     private void transformDecision(ModelElement element) {
         element.label = ModelNamesUtils.convertElementLabel(element.label);
         transformDecisionBranches(element);
     }
-    
+
     private void transformDecisionBranches(ModelElement element) {
         for(ModelConnection connection : element.connections) {
             connection.label = ModelNamesUtils.convertConnectionLabel(connection.label);
         }
         convertBooleanBranches(element);
     }
-    
+
     private void convertBooleanBranches(ModelElement element) {
         if (element.connections.size() == 2) {
             String first = element.connections.get(0).label;
@@ -115,7 +113,7 @@ public class ModelTransformer {
             }
         }
     }
-    
+
     private ModelElement getNextElement(ModelElement element) {
         int connectionsCount = element.connections.size();
         return connectionsCount > 0 ? element.connections.get(0).target : null;
