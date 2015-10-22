@@ -112,7 +112,7 @@ public class MergePointsImpl implements MergePoints {
 
     @Override
     public void improperBranchingDetected() {
-        error = "Diagram error (element '" + node.label + "' is part of a invalid branch)";
+        error = "Diagram error (element '" + node.label + "' is part of an invalid branch)";
     }
 
     @Override
