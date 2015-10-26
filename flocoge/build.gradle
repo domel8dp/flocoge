@@ -1,3 +1,7 @@
+apply plugin: 'java'
+
+sourceCompatibility = JavaVersion.VERSION_1_7
+
 repositories {
     mavenCentral()
 }
@@ -9,12 +13,29 @@ dependencies {
     testCompile "org.mockito:mockito-core:$mockitoVersion"
 }
 
+sourceSets {
+    generated {
+        java {
+            srcDir 'src/generated/java'
+        }
+    }
+    main {
+        compileClasspath += generated.output
+        runtimeClasspath += generated.output
+    }
+    test {
+        compileClasspath += generated.output
+        runtimeClasspath += generated.output
+    }
+}
+
 task fatJar(type: Jar) {
     manifest {
         attributes 'Main-Class': "pl.dpawlak.flocoge.Main"
         attributes 'Flocoge-Version': "$version"
     }
     baseName = project.name + '-all'
+    from sourceSets.generated.output
     from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
     with jar
 }

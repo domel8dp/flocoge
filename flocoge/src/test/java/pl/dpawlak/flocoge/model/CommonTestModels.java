@@ -102,18 +102,6 @@ public class CommonTestModels {
         return new ModelBuilder().startPath(Shape.ON_PAGE_REF, INVALID_LABEL).build();
     }
 
-    public static FlocogeModel createModelWithInvalidDecisionLabel() {
-        return new ModelBuilder()
-            .startPath(Shape.DECISION, INVALID_LABEL)
-                .branch()
-                    .connectElement(Shape.OFF_PAGE_REF, "process normal<br>user request<br>", "normal")
-                    .end()
-                .branch()
-                    .connectElement(Shape.OFF_PAGE_REF, "process vip<br>request<br>", "vip")
-                    .end()
-            .build();
-    }
-
     public static FlocogeModel createModelWithInvalidDecisionBranchLabel() {
         return new ModelBuilder()
             .startPath(Shape.DECISION, "isOk")

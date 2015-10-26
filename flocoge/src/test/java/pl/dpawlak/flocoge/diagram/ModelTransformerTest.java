@@ -4,7 +4,6 @@ import static org.mockito.Mockito.mock;
 
 import org.junit.Test;
 
-import pl.dpawlak.flocoge.diagram.ModelTransformer;
 import pl.dpawlak.flocoge.log.Logger;
 import pl.dpawlak.flocoge.model.CommonTestModels;
 import pl.dpawlak.flocoge.model.FlocogeModel;
@@ -48,7 +47,7 @@ public class ModelTransformerTest {
     }
 
     private void transformAndValidate(FlocogeModel model, FlocogeModel expectedModel) {
-        new ModelTransformer(mock(Logger.class)).transform(model);
+        new ModelInspector(mock(Logger.class)).inspect(model);
         new ModelsMatchingValidator(model, expectedModel).validate();
     }
 }

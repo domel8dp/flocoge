@@ -8,9 +8,8 @@ import pl.dpawlak.flocoge.config.CommandLineConfigParser;
 import pl.dpawlak.flocoge.config.Configuration;
 import pl.dpawlak.flocoge.diagram.DiagramLoader;
 import pl.dpawlak.flocoge.diagram.DiagramLoadingException;
+import pl.dpawlak.flocoge.diagram.ModelInspector;
 import pl.dpawlak.flocoge.diagram.ModelLoader;
-import pl.dpawlak.flocoge.diagram.ModelTransformer;
-import pl.dpawlak.flocoge.diagram.ModelValidator;
 import pl.dpawlak.flocoge.generator.CodeGenerationException;
 import pl.dpawlak.flocoge.generator.CodeGenerator;
 import pl.dpawlak.flocoge.log.Logger;
@@ -29,15 +28,13 @@ public class Main {
                 ModelLoader modelLoader = new ModelLoader(XMLInputFactory.newInstance());
                 DiagramLoader diagramLoader = new DiagramLoader(config, modelLoader, log);
                 diagramLoader.loadDiagram(model);
-                ModelValidator validator = new ModelValidator(log);
-                if (validator.validate(model)) {
-                    ModelTransformer transformer = new ModelTransformer(log);
-                    transformer.transform(model);
+                ModelInspector inspector = new ModelInspector(log);
+                if (inspector.inspect(model)) {
                     log.printModel(model);
                     CodeGenerator generator = new CodeGenerator(config, log);
                     generator.generate(model);
                 } else {
-                    log.error("Model validation failed ({})", validator.getError());
+                    log.error("Model validation failed ({})", inspector.getError());
                     System.exit(1);
                 }
             } catch (DiagramLoadingException loadingEx) {
