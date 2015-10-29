@@ -5,47 +5,43 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import pl.dpawlak.flocoge.model.DecissionMeta;
-import pl.dpawlak.flocoge.model.FlocogeModel;
-import pl.dpawlak.flocoge.model.ModelElement;
+import pl.dpawlak.flocoge.log.Logger;
+import pl.dpawlak.flocoge.model.DecisionMeta;
 
 public class MergePointsImpl implements MergePoints {
 
-    private final ModelElement node;
+    private final Logger log;
+    private final InspectionContext context;
     private final String decisionId;
     private final int branchIndex;
-    private final DecissionMeta decission;
-    private final Map<String, Integer> currentBranches;
+    private final DecisionMeta decision;
+    private final Map<String, List<Integer>> branches;
 
-    private boolean valid;
-    private String error;
-
-    public MergePointsImpl(FlocogeModel model, ModelElement node, String decisionId, int branchIndex,
-            Map<String, Integer> currentBranches) {
-        this.node = node;
+    public MergePointsImpl(Logger log, InspectionContext context, String decisionId, int branchIndex) {
+        this.log = log;
+        this.context = context;
         this.decisionId = decisionId;
         this.branchIndex = branchIndex;
-        this.currentBranches = currentBranches;
-        decission = model.decissions.get(decisionId);
-        valid = true;
+        decision = context.getDecisionMeta(decisionId);
+        branches = context.getBranches();
     }
 
     @Override
     public boolean idInNode() {
-        return node.branches.containsKey(decisionId);
+        return branches.containsKey(decisionId);
     }
 
     @Override
     public boolean indexInNode() {
-        return node.branches.get(decisionId).contains(branchIndex);
+        return branches.get(decisionId).contains(branchIndex);
     }
 
     @Override
     public boolean allBranchesEqual() {
-        Iterator<Map.Entry<String, Integer>> currentBranchesIterator = currentBranches.entrySet().iterator();
+        Iterator<Map.Entry<String, Integer>> currentBranchesIterator = context.getCurrentBranchesIterator();
         while (currentBranchesIterator.hasNext()) {
             Map.Entry<String, Integer> branch = currentBranchesIterator.next();
-            List<Integer> nodeBranchIndices = node.branches.get(branch.getKey());
+            List<Integer> nodeBranchIndices = branches.get(branch.getKey());
             if (differentBranchIndices(branch, nodeBranchIndices)) {
                 return false;
             }
@@ -60,34 +56,34 @@ public class MergePointsImpl implements MergePoints {
 
     @Override
     public void loopDetected() {
-        error = "Diagram error (element '" + node.label + "' is part of a loop)";
+        log.error("Diagram error (element '{}' is part of a loop)", context.getLabel());
     }
 
     @Override
     public void markInvalid() {
-        valid = false;
+        context.markInvalid();
     }
 
     @Override
     public boolean mergePointExistsForThisIndex() {
-        return decission.mergePoints[branchIndex] != null;
+        return decision.mergePoints[branchIndex] != null;
     }
 
     @Override
     public void saveIndexInNode() {
-        node.branches.get(decisionId).add(branchIndex);
+        branches.get(decisionId).add(branchIndex);
     }
 
     @Override
     public void saveDecisionIdInNode() {
-        node.branches.put(decisionId, new ArrayList<Integer>(decission.mergePoints.length));
+        branches.put(decisionId, new ArrayList<Integer>(decision.mergePoints.length));
         saveIndexInNode();
     }
 
     @Override
     public boolean otherMergePointExists() {
-        for (int index = 0; index < decission.mergePoints.length; index++) {
-            if (index != branchIndex && decission.mergePoints[index] != null) {
+        for (int index = 0; index < decision.mergePoints.length; index++) {
+            if (index != branchIndex && decision.mergePoints[index] != null) {
                 return true;
             }
         }
@@ -97,35 +93,27 @@ public class MergePointsImpl implements MergePoints {
     @Override
     public boolean sameMergePoint() {
         String otherMergePoint = null;
-        for (int index = 0; index < decission.mergePoints.length; index++) {
-            if (index != branchIndex && decission.mergePoints[index] != null) {
-                otherMergePoint = decission.mergePoints[index];
+        for (int index = 0; index < decision.mergePoints.length; index++) {
+            if (index != branchIndex && decision.mergePoints[index] != null) {
+                otherMergePoint = decision.mergePoints[index];
             }
         }
-        return node.id.equals(otherMergePoint);
+        return context.getId().equals(otherMergePoint);
     }
 
     @Override
     public void saveMergePointForBranch() {
-        decission.mergePoints[branchIndex] = node.id;
+        decision.mergePoints[branchIndex] = context.getId();
     }
 
     @Override
     public void improperBranchingDetected() {
-        error = "Diagram error (element '" + node.label + "' is part of an invalid branch)";
+        log.error("Diagram error (element '{}' is part of an invalid branch)", context.getLabel());
     }
 
     @Override
     public void saveMergePointOnBothBranches() {
-        int otherBranchIndex = node.branches.get(decisionId).get(0);
-        decission.mergePoints[branchIndex] = decission.mergePoints[otherBranchIndex] = node.id;
-    }
-
-    public boolean isValid() {
-        return valid;
-    }
-
-    public String getError() {
-        return error;
+        int otherBranchIndex = branches.get(decisionId).get(0);
+        decision.mergePoints[branchIndex] = decision.mergePoints[otherBranchIndex] = context.getId();
     }
 }

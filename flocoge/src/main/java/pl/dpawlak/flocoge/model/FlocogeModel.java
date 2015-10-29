@@ -9,11 +9,11 @@ public class FlocogeModel {
 
     public final Collection<ModelElement> startElements;
     public final Map<String, ModelElement> elements;
-    public final Map<String, DecissionMeta> decissions;
+    public final Map<String, DecisionMeta> decisions;
 
     public FlocogeModel() {
         startElements = new LinkedList<>();
         elements = new LinkedHashMap<>();
-        decissions = new LinkedHashMap<>();
+        decisions = new LinkedHashMap<>();
     }
 }

@@ -34,7 +34,6 @@ public class Main {
                     CodeGenerator generator = new CodeGenerator(config, log);
                     generator.generate(model);
                 } else {
-                    log.error("Model validation failed ({})", inspector.getError());
                     System.exit(1);
                 }
             } catch (DiagramLoadingException loadingEx) {

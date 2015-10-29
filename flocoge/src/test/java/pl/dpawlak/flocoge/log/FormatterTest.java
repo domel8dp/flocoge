@@ -20,7 +20,7 @@ public class FormatterTest {
     }
 
     @Test
-    public void testToManyPlaceholders() {
+    public void testTooManyPlaceholders() {
         assertEquals("This is a {} message with {} placeholders, {}",
             Formatter.buildMsg("{} is a {} message with {} placeholders, {}", "This"));
     }

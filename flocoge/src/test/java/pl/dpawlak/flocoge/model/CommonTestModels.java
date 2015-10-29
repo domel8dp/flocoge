@@ -77,10 +77,10 @@ public class CommonTestModels {
             .build();
     }
 
-    public static FlocogeModel createModelWithInvalidBranches() {
+    public static FlocogeModel createModelWithInvalidBranches(ModelElement.Shape shape) {
         return new ModelBuilder()
             .startPath(Shape.EVENT, "user action<br>")
-                .connectElement(Shape.OPERATION, "perform<br>defined<br>action<br>")
+                .connectElement(shape, "perform<br>defined<br>action<br>")
                     .branch()
                         .connectElement(Shape.OFF_PAGE_REF, "process normal<br>user request<br>", "normal")
                         .end()

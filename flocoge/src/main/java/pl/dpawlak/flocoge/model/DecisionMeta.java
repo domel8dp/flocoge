@@ -1,11 +1,11 @@
 package pl.dpawlak.flocoge.model;
 
-public class DecissionMeta {
+public class DecisionMeta {
 
     public final String decisionId;
     public final String[] mergePoints;
 
-    public DecissionMeta(String decisionId, int branchCount) {
+    public DecisionMeta(String decisionId, int branchCount) {
         this.decisionId = decisionId;
         mergePoints = new String[branchCount];
     }

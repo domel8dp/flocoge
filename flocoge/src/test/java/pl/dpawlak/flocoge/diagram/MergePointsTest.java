@@ -10,25 +10,30 @@ import java.util.Map;
 
 import org.junit.Test;
 
-import pl.dpawlak.flocoge.model.DecissionMeta;
+import pl.dpawlak.flocoge.log.util.ErrorCollectingLogger;
+import pl.dpawlak.flocoge.model.DecisionMeta;
 import pl.dpawlak.flocoge.model.FlocogeModel;
 import pl.dpawlak.flocoge.model.ModelElement;
 
 public class MergePointsTest {
 
-    private static final String DECISION_ID = "a decission";
-    private static final String OTHER_DECISION_ID = "other decission";
+    private static final String DECISION_ID = "a decision";
+    private static final String OTHER_DECISION_ID = "other decision";
     private static final String ELEMENT_ID = "an element";
     private static final String OTHER_ELEMENT_ID = "other element";
+
+    private InspectionContext context;
+    private ErrorCollectingLogger logger;
+    private MergePointsImpl mergePoints;
 
     /*
      * inspect node without decision id -> save decision id and branch index in node
      */
     @Test
     public void inspectNewNode() {
-        FlocogeModel model = modelWithDecissionMeta(1);
+        FlocogeModel model = modelWithDecisionMeta(1);
         ModelElement element = nodeWithVisitedBranches();
-        MergePoints mergePoints = mergePoints(model, element, 0);
+        initMergePoints(model, element, 0);
 
         new MergePointsFacade(mergePoints, null).inspectNode();
 
@@ -40,14 +45,14 @@ public class MergePointsTest {
      */
     @Test
     public void inspectAlreadyVisitedNode() {
-        FlocogeModel model = modelWithDecissionMeta(2);
+        FlocogeModel model = modelWithDecisionMeta(2);
         ModelElement element = nodeWithVisitedBranches(0);
-        MergePointsImpl mergePoints = mergePoints(model, element, 0);
+        initMergePoints(model, element, 0);
 
         new MergePointsFacade(mergePoints, null).inspectNode();
 
-        assertFalse(mergePoints.isValid());
-        assertTrue(mergePoints.getError().contains("is part of a loop"));
+        assertFalse(context.isValid());
+        assertTrue(logger.getError().contains("is part of a loop"));
     }
 
     /*
@@ -55,18 +60,21 @@ public class MergePointsTest {
      */
     @Test
     public void inspectAlreadyVisitedNodeOnDifferentBranch() {
-        FlocogeModel model = modelWithDecissionMeta(1);
-        model.decissions.put(OTHER_DECISION_ID, new DecissionMeta(OTHER_DECISION_ID, 2));
-        ModelElement element = nodeWithVisitedBranches(0);
-        element.branches.put(OTHER_DECISION_ID, Arrays.asList(0));
+        FlocogeModel model = modelWithDecisionMeta(1);
+        context = new InspectionContext(model);
+        model.decisions.put(OTHER_DECISION_ID, new DecisionMeta(OTHER_DECISION_ID, 2));
+        context.setElement(nodeWithVisitedBranches(0));
+        context.getBranches().put(OTHER_DECISION_ID, Arrays.asList(0));
         Map<String, Integer> currentBranches = new HashMap<>();
         currentBranches.put(DECISION_ID, 0);
         currentBranches.put(OTHER_DECISION_ID, 1);
-        MergePointsImpl mergePoints = new MergePointsImpl(model, element, DECISION_ID, 0, currentBranches);
+        context.setCurrentBranches(currentBranches);
+        logger = new ErrorCollectingLogger();
+        mergePoints = new MergePointsImpl(logger, context, DECISION_ID, 0);
 
         new MergePointsFacade(mergePoints, null).inspectNode();
 
-        assertTrue(mergePoints.isValid());
+        assertTrue(context.isValid());
     }
 
     /*
@@ -74,16 +82,16 @@ public class MergePointsTest {
      */
     @Test
     public void inspectNewMergePoint() {
-        FlocogeModel model = modelWithDecissionMeta(3);
+        FlocogeModel model = modelWithDecisionMeta(3);
         ModelElement element = nodeWithVisitedBranches(0);
-        MergePoints mergePoints = mergePoints(model, element, 2);
+        initMergePoints(model, element, 2);
 
         new MergePointsFacade(mergePoints, null).inspectNode();
-        DecissionMeta decissionMeta = model.decissions.get(DECISION_ID);
+        DecisionMeta decisionMeta = model.decisions.get(DECISION_ID);
 
-        assertEquals(ELEMENT_ID, decissionMeta.mergePoints[0]);
-        assertNull(decissionMeta.mergePoints[1]);
-        assertEquals(ELEMENT_ID, decissionMeta.mergePoints[2]);
+        assertEquals(ELEMENT_ID, decisionMeta.mergePoints[0]);
+        assertNull(decisionMeta.mergePoints[1]);
+        assertEquals(ELEMENT_ID, decisionMeta.mergePoints[2]);
     }
 
     /*
@@ -91,16 +99,16 @@ public class MergePointsTest {
      */
     @Test
     public void inspectExistingMergePoint() {
-        FlocogeModel model = modelWithDecissionMeta(3);
-        model.decissions.get(DECISION_ID).mergePoints[0] = ELEMENT_ID;
-        model.decissions.get(DECISION_ID).mergePoints[2] = ELEMENT_ID;
+        FlocogeModel model = modelWithDecisionMeta(3);
+        model.decisions.get(DECISION_ID).mergePoints[0] = ELEMENT_ID;
+        model.decisions.get(DECISION_ID).mergePoints[2] = ELEMENT_ID;
         ModelElement element = nodeWithVisitedBranches(0, 2);
-        MergePoints mergePoints = mergePoints(model, element, 1);
+        initMergePoints(model, element, 1);
 
         new MergePointsFacade(mergePoints, null).inspectNode();
-        DecissionMeta decissionMeta = model.decissions.get(DECISION_ID);
+        DecisionMeta decisionMeta = model.decisions.get(DECISION_ID);
 
-        assertEquals(ELEMENT_ID, decissionMeta.mergePoints[1]);
+        assertEquals(ELEMENT_ID, decisionMeta.mergePoints[1]);
     }
 
     /*
@@ -108,16 +116,16 @@ public class MergePointsTest {
      */
     @Test
     public void inspectInvalidMergePoint() {
-        FlocogeModel model = modelWithDecissionMeta(3);
-        model.decissions.get(DECISION_ID).mergePoints[0] = OTHER_ELEMENT_ID;
-        model.decissions.get(DECISION_ID).mergePoints[2] = OTHER_ELEMENT_ID;
+        FlocogeModel model = modelWithDecisionMeta(3);
+        model.decisions.get(DECISION_ID).mergePoints[0] = OTHER_ELEMENT_ID;
+        model.decisions.get(DECISION_ID).mergePoints[2] = OTHER_ELEMENT_ID;
         ModelElement element = nodeWithVisitedBranches(0, 2);
-        MergePointsImpl mergePoints = mergePoints(model, element, 1);
+        initMergePoints(model, element, 1);
 
         new MergePointsFacade(mergePoints, null).inspectNode();
 
-        assertFalse(mergePoints.isValid());
-        assertTrue(mergePoints.getError().contains("is part of an invalid branch"));
+        assertFalse(context.isValid());
+        assertTrue(logger.getError().contains("is part of an invalid branch"));
     }
 
     /*
@@ -125,21 +133,21 @@ public class MergePointsTest {
      */
     @Test
     public void inspectNodeOnAlreadyMergedBranch() {
-        FlocogeModel model = modelWithDecissionMeta(2);
-        model.decissions.get(DECISION_ID).mergePoints[0] = OTHER_ELEMENT_ID;
-        model.decissions.get(DECISION_ID).mergePoints[1] = OTHER_ELEMENT_ID;
+        FlocogeModel model = modelWithDecisionMeta(2);
+        model.decisions.get(DECISION_ID).mergePoints[0] = OTHER_ELEMENT_ID;
+        model.decisions.get(DECISION_ID).mergePoints[1] = OTHER_ELEMENT_ID;
         ModelElement element = nodeWithVisitedBranches(0);
-        MergePointsImpl mergePoints = mergePoints(model, element, 1);
+        initMergePoints(model, element, 1);
 
         new MergePointsFacade(mergePoints, null).inspectNode();
 
         assertEquals(Collections.singletonMap(DECISION_ID, Arrays.asList(0, 1)), element.branches);
     }
 
-    private FlocogeModel modelWithDecissionMeta(int branchCount) {
+    private FlocogeModel modelWithDecisionMeta(int branchCount) {
         FlocogeModel model = new FlocogeModel();
-        DecissionMeta decissionMeta = new DecissionMeta(DECISION_ID, branchCount);
-        model.decissions.put(DECISION_ID, decissionMeta);
+        DecisionMeta decisionMeta = new DecisionMeta(DECISION_ID, branchCount);
+        model.decisions.put(DECISION_ID, decisionMeta);
         return model;
     }
 
@@ -152,8 +160,12 @@ public class MergePointsTest {
         return element;
     }
 
-    private MergePointsImpl mergePoints(FlocogeModel model, ModelElement node, int branchIndex) {
-        return new MergePointsImpl(model, node, DECISION_ID, branchIndex, currentBranches(branchIndex));
+    private void initMergePoints(FlocogeModel model, ModelElement element, int branchIndex) {
+        context = new InspectionContext(model);
+        context.setElement(element);
+        context.setCurrentBranches(currentBranches(branchIndex));
+        logger = new ErrorCollectingLogger();
+        mergePoints = new MergePointsImpl(logger, context, DECISION_ID, branchIndex);
     }
 
     private Map<String, Integer> currentBranches(int branchIndex) {
