@@ -1,5 +1,7 @@
 package pl.dpawlak.flocoge.diagram;
 
+import static org.junit.Assert.*;
+
 import static org.mockito.Mockito.mock;
 
 import static pl.dpawlak.flocoge.model.CommonTestModels.*;
@@ -37,6 +39,20 @@ public class ModelTransformingTest {
     @Test
     public void testComplexModelTransforming() {
         transformAndValidate(createComplexModel(), createTransformedComplexModel());
+    }
+
+    @Test
+    public void testModelWithExternalCalls() {
+        FlocogeModel model = createTestFileModel();
+        new ModelInspector(mock(Logger.class)).inspect(model);
+        assertTrue(model.areExternalCallsPresent());
+    }
+
+    @Test
+    public void testModelWithoutExternalCalls() {
+        FlocogeModel model = createComplexModel();
+        new ModelInspector(mock(Logger.class)).inspect(model);
+        assertFalse(model.areExternalCallsPresent());
     }
 
     private void transformAndValidate(FlocogeModel model, FlocogeModel expectedModel) {

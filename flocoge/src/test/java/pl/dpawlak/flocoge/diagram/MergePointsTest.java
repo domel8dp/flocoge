@@ -35,7 +35,7 @@ public class MergePointsTest {
         ModelElement element = nodeWithVisitedBranches();
         initMergePoints(model, element, 0);
 
-        new MergePointsFacade(mergePoints, null).inspectNode();
+        new MergePointsFacade(mergePoints).inspectNode();
 
         assertEquals(Collections.singletonMap(DECISION_ID, Collections.singletonList(0)), element.branches);
     }
@@ -49,7 +49,7 @@ public class MergePointsTest {
         ModelElement element = nodeWithVisitedBranches(0);
         initMergePoints(model, element, 0);
 
-        new MergePointsFacade(mergePoints, null).inspectNode();
+        new MergePointsFacade(mergePoints).inspectNode();
 
         assertFalse(context.isValid());
         assertTrue(logger.getError().contains("is part of a loop"));
@@ -72,7 +72,7 @@ public class MergePointsTest {
         logger = new ErrorCollectingLogger();
         mergePoints = new MergePointsImpl(logger, context, DECISION_ID, 0);
 
-        new MergePointsFacade(mergePoints, null).inspectNode();
+        new MergePointsFacade(mergePoints).inspectNode();
 
         assertTrue(context.isValid());
     }
@@ -86,7 +86,7 @@ public class MergePointsTest {
         ModelElement element = nodeWithVisitedBranches(0);
         initMergePoints(model, element, 2);
 
-        new MergePointsFacade(mergePoints, null).inspectNode();
+        new MergePointsFacade(mergePoints).inspectNode();
         DecisionMeta decisionMeta = model.decisions.get(DECISION_ID);
 
         assertEquals(ELEMENT_ID, decisionMeta.mergePoints[0]);
@@ -105,7 +105,7 @@ public class MergePointsTest {
         ModelElement element = nodeWithVisitedBranches(0, 2);
         initMergePoints(model, element, 1);
 
-        new MergePointsFacade(mergePoints, null).inspectNode();
+        new MergePointsFacade(mergePoints).inspectNode();
         DecisionMeta decisionMeta = model.decisions.get(DECISION_ID);
 
         assertEquals(ELEMENT_ID, decisionMeta.mergePoints[1]);
@@ -122,7 +122,7 @@ public class MergePointsTest {
         ModelElement element = nodeWithVisitedBranches(0, 2);
         initMergePoints(model, element, 1);
 
-        new MergePointsFacade(mergePoints, null).inspectNode();
+        new MergePointsFacade(mergePoints).inspectNode();
 
         assertFalse(context.isValid());
         assertTrue(logger.getError().contains("is part of an invalid branch"));
@@ -139,7 +139,7 @@ public class MergePointsTest {
         ModelElement element = nodeWithVisitedBranches(0);
         initMergePoints(model, element, 1);
 
-        new MergePointsFacade(mergePoints, null).inspectNode();
+        new MergePointsFacade(mergePoints).inspectNode();
 
         assertEquals(Collections.singletonMap(DECISION_ID, Arrays.asList(0, 1)), element.branches);
     }

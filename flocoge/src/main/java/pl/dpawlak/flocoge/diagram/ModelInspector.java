@@ -35,7 +35,7 @@ public class ModelInspector {
 
     private void initContext(FlocogeModel model) {
         context = new InspectionContext(model);
-        elementInspector = new ElementInspectorFacade(new ElementInspectorImpl(log, context), null);
+        elementInspector = new ElementInspectorFacade(new ElementInspectorImpl(log, context));
     }
 
     private void traversePaths() {

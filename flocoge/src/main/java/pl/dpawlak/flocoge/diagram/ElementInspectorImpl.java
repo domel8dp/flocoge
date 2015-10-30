@@ -49,7 +49,7 @@ public class ElementInspectorImpl implements ElementInspector {
         while (context.isValid() && branchesIterator.hasNext()) {
             Map.Entry<String, Integer> branch = branchesIterator.next();
             MergePointsImpl impl = new MergePointsImpl(log, context, branch.getKey(), branch.getValue());
-            new MergePointsFacade(impl, null).inspectNode();
+            new MergePointsFacade(impl).inspectNode();
         }
     }
 
@@ -114,6 +114,13 @@ public class ElementInspectorImpl implements ElementInspector {
                 element.connections.get(1).label = ModelConnection.TRUE;
                 Collections.swap(element.connections, 0, 1);
             }
+        }
+    }
+
+    @Override
+    public void markIfExternalCall() {
+        if (context.getShape() == Shape.OFF_PAGE_REF) {
+            context.markExternalCall();
         }
     }
 

@@ -135,6 +135,10 @@ public class InspectionContext {
         return element;
     }
 
+    public void markExternalCall() {
+        model.markExternalCallsPresent();
+    }
+
     public static class DecisionBackup {
         private final ModelElement element;
         private final  Map<String, Integer> currentBranches;

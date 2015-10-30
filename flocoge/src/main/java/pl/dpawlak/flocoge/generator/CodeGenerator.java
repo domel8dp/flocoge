@@ -60,8 +60,10 @@ public class CodeGenerator {
         try {
             String baseName = config.baseName;
             interfaceClass = codeModel._class(config.packageName + "." + baseName, ClassType.INTERFACE);
-            externalClass = codeModel._class(config.packageName + "." + baseName + "External", ClassType.INTERFACE);
             facadeClass = codeModel._class(config.packageName + "." + baseName + "Facade");
+            if (model.areExternalCallsPresent()) {
+                externalClass = codeModel._class(config.packageName + "." + baseName + "External", ClassType.INTERFACE);
+            }
             generateFacadeFieldsAndConstructor();
         } catch (JClassAlreadyExistsException exception) {
             throw new CodeGenerationException(exception);
@@ -75,7 +77,9 @@ public class CodeGenerator {
             .append(baseName, 1, baseName.length()).toString();
         JMethod constructor = facadeClass.constructor(JMod.PUBLIC);
         delegate = createAndAssignFacadeField(constructor, interfaceClass, delegateName);
-        externalDelegate = createAndAssignFacadeField(constructor, externalClass, delegateName + "External");
+        if (model.areExternalCallsPresent()) {
+            externalDelegate = createAndAssignFacadeField(constructor, externalClass, delegateName + "External");
+        }
     }
 
     private JFieldVar createAndAssignFacadeField(JMethod constructor, JDefinedClass modelClass, String name) {
