@@ -147,9 +147,12 @@ public class CommandLineConfigParser {
     }
 
     private void printHelp() {
+        log.log("-------");
         log.log("Draw.io Flowchart Code Generator");
+        log.log("-------");
         log.log("Usage:");
         log.log("[flags] <diagram path> <generated sources folder> <package name>");
+        log.log("");
         log.log("Flags:");
         log.log("--help -h : print this help message");
         log.log("--verbose -v : print some information about execution");
