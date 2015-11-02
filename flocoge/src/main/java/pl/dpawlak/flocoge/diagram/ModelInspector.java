@@ -1,8 +1,10 @@
 package pl.dpawlak.flocoge.diagram;
 
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 import pl.dpawlak.flocoge.diagram.InspectionContext.DecisionBackup;
 import pl.dpawlak.flocoge.log.Logger;
@@ -27,10 +29,31 @@ public class ModelInspector {
     }
 
     public boolean inspect(FlocogeModel model) {
-        initContext(model);
-        traversePaths();
-        context.updateModelStartElements(transformed);
-        return context.isValid();
+        if (verifyElementUniqueness(model)) {
+            initContext(model);
+            traversePaths();
+            updateModelStartElements(model);
+            return context.isValid();
+        } else {
+            return false;
+        }
+    }
+
+    private boolean verifyElementUniqueness(FlocogeModel model) {
+        Map<String, ModelElement.Shape> elementShapes = new HashMap<>();
+        for (ModelElement element : model.elements.values()) {
+            if (element.shape != ModelElement.Shape.SKIP) {
+                if (elementShapes.containsKey(element.label)) {
+                    if (element.shape != elementShapes.get(element.label)) {
+                        log.error("Diagram error (element '{}' has multiple shapes)", element.label);
+                        return false;
+                    }
+                } else {
+                    elementShapes.put(element.label, element.shape);
+                }
+            }
+        }
+        return true;
     }
 
     private void initContext(FlocogeModel model) {
@@ -82,5 +105,10 @@ public class ModelInspector {
                 transformed.add(startElement);
             }
         }
+    }
+
+    private void updateModelStartElements(FlocogeModel model) {
+        model.startElements.clear();
+        model.startElements.addAll(transformed);
     }
 }

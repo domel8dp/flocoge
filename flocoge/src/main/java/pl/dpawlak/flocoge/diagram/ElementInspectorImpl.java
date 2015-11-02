@@ -23,6 +23,7 @@ public class ElementInspectorImpl implements ElementInspector {
     public void skipElements() {
         ModelElement nextElement = context.getElement();
         while (context.isValid() && nextElement != null && nextElement.shape == Shape.SKIP) {
+            context.removeElement(nextElement.id);
             nextElement = getNextElement(nextElement);
         }
         context.replaceElement(nextElement);

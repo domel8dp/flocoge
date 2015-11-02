@@ -5,8 +5,9 @@ import static org.junit.Assert.*;
 import org.junit.Test;
 
 import pl.dpawlak.flocoge.log.util.ErrorCollectingLogger;
-import pl.dpawlak.flocoge.model.CommonTestModels;
+import pl.dpawlak.flocoge.model.TestModels;
 import pl.dpawlak.flocoge.model.FlocogeModel;
+import pl.dpawlak.flocoge.model.InvalidTestModels;
 import pl.dpawlak.flocoge.model.ModelElement.Shape;
 
 public class ModelValidationTest {
@@ -17,55 +18,62 @@ public class ModelValidationTest {
 
     @Test
     public void testFileModelValidation() {
-        initInspector(CommonTestModels.createTestFileModel());
+        initInspector(TestModels.createTestFileModel());
         assertTrue(inspector.inspect(model));
     }
 
     @Test
     public void testModelWithLoopsValidation() {
-        initInspector(CommonTestModels.createModelWithLoop());
+        initInspector(InvalidTestModels.createModelWithLoop());
         assertFalse(inspector.inspect(model));
         assertTrue(logger.getError().contains("is part of a loop"));
     }
 
     @Test
     public void testInvalidBranchesValidation() {
-        initInspector(CommonTestModels.createModelWithInvalidBranches(Shape.OPERATION));
+        initInspector(InvalidTestModels.createModelWithInvalidBranches(Shape.OPERATION));
         assertFalse(inspector.inspect(model));
         assertTrue(logger.getError().contains("has more than one branch"));
     }
 
     @Test
     public void testInvalidSkipBranchesValidation() {
-        initInspector(CommonTestModels.createModelWithInvalidBranches(Shape.SKIP));
+        initInspector(InvalidTestModels.createModelWithInvalidBranches(Shape.SKIP));
         assertFalse(inspector.inspect(model));
         assertTrue(logger.getError().contains("has more than one branch"));
     }
 
     @Test
     public void testInvalidDecisionBranchesValidation() {
-        initInspector(CommonTestModels.createModelWithInvalidDecisionBranches());
+        initInspector(InvalidTestModels.createModelWithInvalidDecisionBranches());
         assertFalse(inspector.inspect(model));
         assertTrue(logger.getError().contains("does not have enough branches"));
     }
 
     @Test
     public void testInvalidElementLabelValidation() {
-        initInspector(CommonTestModels.createModelWithInvalidElementLabel());
+        initInspector(InvalidTestModels.createModelWithInvalidElementLabel());
         assertFalse(inspector.inspect(model));
         assertTrue(logger.getError().contains("(element has invalid label"));
     }
 
     @Test
     public void testInvalidDecisionBranchLabelValidation() {
-        initInspector(CommonTestModels.createModelWithInvalidDecisionBranchLabel());
+        initInspector(InvalidTestModels.createModelWithInvalidDecisionBranchLabel());
         assertFalse(inspector.inspect(model));
         assertTrue(logger.getError().contains("branch has invalid label"));
     }
 
     @Test
+    public void testNonUniqueShapesValidation() {
+        initInspector(InvalidTestModels.createModelWithNonUniqueShapes());
+        assertFalse(inspector.inspect(model));
+        assertTrue(logger.getError().contains("has multiple shapes"));
+    }
+
+    @Test
     public void testComplexModelValidation() {
-        initInspector(CommonTestModels.createComplexModel());
+        initInspector(TestModels.createComplexModel());
         assertTrue(inspector.inspect(model));
     }
 

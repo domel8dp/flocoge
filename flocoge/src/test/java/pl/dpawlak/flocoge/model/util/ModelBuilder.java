@@ -40,6 +40,7 @@ public class ModelBuilder {
         lastElement.shape = shape;
         lastElement.label = label;
         model.startElements.add(lastElement);
+        model.elements.put(id, lastElement);
         return this;
     }
 
@@ -60,6 +61,7 @@ public class ModelBuilder {
         element.id = id;
         element.shape = shape;
         element.label = label;
+        model.elements.put(id, element);
         return connectElement(element, connectionLabel);
     }
 

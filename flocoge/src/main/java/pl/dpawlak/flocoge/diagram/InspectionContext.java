@@ -102,9 +102,8 @@ public class InspectionContext {
         this.element = element;
     }
 
-    public void updateModelStartElements(List<ModelElement> startElements) {
-        model.startElements.clear();
-        model.startElements.addAll(startElements);
+    public void removeElement(String elementId) {
+        model.elements.remove(elementId);
     }
 
     public Iterator<Map.Entry<String, Integer>> getCurrentBranchesIterator() {

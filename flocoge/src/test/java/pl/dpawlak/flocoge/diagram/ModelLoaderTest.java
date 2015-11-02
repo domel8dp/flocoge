@@ -10,7 +10,7 @@ import javax.xml.stream.XMLStreamException;
 
 import org.junit.Test;
 
-import pl.dpawlak.flocoge.model.CommonTestModels;
+import pl.dpawlak.flocoge.model.TestModels;
 import pl.dpawlak.flocoge.model.FlocogeModel;
 import pl.dpawlak.flocoge.model.util.ModelsMatchingValidator;
 
@@ -25,6 +25,6 @@ public class ModelLoaderTest {
         ModelLoader loader = new ModelLoader(factory);
         FlocogeModel model = new FlocogeModel();
         loader.loadModel(model, reader, reader.nextTag().asStartElement());
-        new ModelsMatchingValidator(model, CommonTestModels.createTestFileModel()).validate();
+        new ModelsMatchingValidator(model, TestModels.createTestFileModel()).validate();
     }
 }

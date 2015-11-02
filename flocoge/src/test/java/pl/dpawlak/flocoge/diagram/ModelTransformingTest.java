@@ -4,7 +4,7 @@ import static org.junit.Assert.*;
 
 import static org.mockito.Mockito.mock;
 
-import static pl.dpawlak.flocoge.model.CommonTestModels.*;
+import static pl.dpawlak.flocoge.model.TestModels.*;
 
 import org.junit.Test;
 
