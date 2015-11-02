@@ -1,5 +1,6 @@
 package pl.dpawlak.flocoge.diagram;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -29,11 +30,11 @@ public class ModelInspector {
     }
 
     public boolean inspect(FlocogeModel model) {
-        if (verifyElementUniqueness(model)) {
-            initContext(model);
-            traversePaths();
+        initContext(model);
+        traversePaths();
+        if (context.isValid() && verifyElementUniqueness(model)) {
             updateModelStartElements(model);
-            return context.isValid();
+            return true;
         } else {
             return false;
         }
@@ -41,19 +42,49 @@ public class ModelInspector {
 
     private boolean verifyElementUniqueness(FlocogeModel model) {
         Map<String, ModelElement.Shape> elementShapes = new HashMap<>();
+        Map<String, String[]> decisionBranches = new HashMap<>();
         for (ModelElement element : model.elements.values()) {
-            if (element.shape != ModelElement.Shape.SKIP) {
-                if (elementShapes.containsKey(element.label)) {
-                    if (element.shape != elementShapes.get(element.label)) {
-                        log.error("Diagram error (element '{}' has multiple shapes)", element.label);
-                        return false;
-                    }
-                } else {
-                    elementShapes.put(element.label, element.shape);
-                }
+            if (!verifyElementShapes(element, elementShapes) || !verifyDecisionBranches(element, decisionBranches)) {
+                return false;
             }
         }
         return true;
+    }
+
+    private boolean verifyElementShapes(ModelElement element, Map<String, ModelElement.Shape> elementShapes) {
+        if (elementShapes.containsKey(element.label)) {
+            if (element.shape != elementShapes.get(element.label)) {
+                log.error("Diagram error (elements '{}' have multiple shapes)", element.label);
+                return false;
+            }
+        } else {
+            elementShapes.put(element.label, element.shape);
+        }
+        return true;
+    }
+
+    private boolean verifyDecisionBranches(ModelElement element, Map<String, String[]> decisionBranches) {
+        if (element.shape == Shape.DECISION) {
+            if (decisionBranches.containsKey(element.label)) {
+                if (!Arrays.equals(getBranches(element), decisionBranches.get(element.label))) {
+                    log.error("Diagram error (decisions '{}' have different branches)", element.label);
+                    return false;
+                }
+            } else {
+                decisionBranches.put(element.label, getBranches(element));
+            }
+        }
+        return true;
+    }
+
+    private String[] getBranches(ModelElement element) {
+        String[] branches = new String[element.connections.size()];
+        int i = 0;
+        for (ModelConnection connection : element.connections) {
+            branches[i++] = connection.label;
+        }
+        Arrays.sort(branches);
+        return branches;
     }
 
     private void initContext(FlocogeModel model) {

@@ -59,4 +59,24 @@ public class InvalidTestModels {
             .connectElement(Shape.ON_PAGE_REF, "a label")
             .build();
     }
+
+    public static FlocogeModel createModelWithNonUniqueDecisionBranches() {
+        return new ModelBuilder()
+            .startPath(Shape.EVENT, "a label")
+                .connectElement(Shape.DECISION, "a decision")
+                    .branch()
+                        .connectElement(Shape.OFF_PAGE_REF, "process a", "a")
+                        .end()
+                    .branch()
+                        .connectElement(Shape.OFF_PAGE_REF, "process b", "b")
+                        .end()
+            .startPath(Shape.DECISION, "a decision")
+                .branch()
+                    .connectElement(Shape.OFF_PAGE_REF, "process c", "c")
+                    .end()
+                .branch()
+                    .connectElement(Shape.OFF_PAGE_REF, "process d", "d")
+                    .end()
+            .build();
+    }
 }

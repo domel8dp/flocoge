@@ -68,7 +68,14 @@ public class ModelValidationTest {
     public void testNonUniqueShapesValidation() {
         initInspector(InvalidTestModels.createModelWithNonUniqueShapes());
         assertFalse(inspector.inspect(model));
-        assertTrue(logger.getError().contains("has multiple shapes"));
+        assertTrue(logger.getError().contains("have multiple shapes"));
+    }
+
+    @Test
+    public void testNonUniqueBranchesValidation() {
+        initInspector(InvalidTestModels.createModelWithNonUniqueDecisionBranches());
+        assertFalse(inspector.inspect(model));
+        assertTrue(logger.getError().contains("have different branches"));
     }
 
     @Test
