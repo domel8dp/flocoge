@@ -43,7 +43,8 @@ public class ModelInspector {
         Map<String, ModelElement.Shape> elementShapes = new HashMap<>();
         Map<String, String[]> decisionBranches = new HashMap<>();
         for (ModelElement element : model.elements.values()) {
-            if (!verifyElementShapes(element, elementShapes) || !verifyDecisionBranches(element, decisionBranches)) {
+            if (!verifyElementShapes(element, elementShapes) || !verifyDecisionBranches(element, decisionBranches) ||
+                    !verifyInternalCall(element)) {
                 return false;
             }
         }
@@ -74,6 +75,20 @@ public class ModelInspector {
             }
         }
         return true;
+    }
+
+    private boolean verifyInternalCall(ModelElement element) {
+        if (element.shape == Shape.ON_PAGE_REF) {
+            for (ModelConnection path : transformed) {
+                if (element.label.equals(path.label) && path.target.shape == Shape.ON_PAGE_REF) {
+                    return true;
+                }
+            }
+            log.error("Diagram error (element '{}' references missing path)", element.label);
+            return false;
+        } else {
+            return true;
+        }
     }
 
     private String[] getBranches(ModelElement element) {

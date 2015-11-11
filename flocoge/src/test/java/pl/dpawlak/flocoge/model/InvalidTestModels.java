@@ -105,4 +105,11 @@ public class InvalidTestModels {
                 .connectElement(Shape.OFF_PAGE_REF, "process c")
             .build();
     }
+
+    public static FlocogeModel createModelWithMissingInternalCall() {
+        return new ModelBuilder()
+            .startPath(Shape.EVENT, "event")
+                .connectElement(Shape.ON_PAGE_REF, "call")
+            .build();
+    }
 }

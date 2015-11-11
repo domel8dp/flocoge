@@ -124,6 +124,13 @@ public class ModelValidationTest {
         assertTrue(logger.getError().contains("(multiple paths have the same name"));
     }
 
+    @Test
+    public void testMissingInternalCall() {
+        initInspector(InvalidTestModels.createModelWithMissingInternalCall());
+        assertFalse(inspector.inspect(model));
+        assertTrue(logger.getError().contains("references missing path)"));
+    }
+
     private void initInspector(FlocogeModel model) {
         this.model = model;
         logger = new ErrorCollectingLogger();
