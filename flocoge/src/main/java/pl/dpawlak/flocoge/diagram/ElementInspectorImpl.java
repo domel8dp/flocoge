@@ -62,6 +62,9 @@ public class ElementInspectorImpl implements ElementInspector {
     @Override
     public void validateAndTransformElementLabel() {
         ModelElement element = context.getElement();
+        if (element.shape == Shape.START && (element.label == null || element.label.trim().length() == 0)) {
+            return;
+        }
         if (ModelNamesUtils.validateElementLabel(element.label)) {
             element.label = ModelNamesUtils.convertElementLabel(element.label);
         } else {

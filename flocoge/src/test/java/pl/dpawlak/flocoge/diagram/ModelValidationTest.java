@@ -51,6 +51,32 @@ public class ModelValidationTest {
     }
 
     @Test
+    public void testNoElementLabelValidation() {
+        initInspector(InvalidTestModels.createModelWithoutElementLabel());
+        assertFalse(inspector.inspect(model));
+        assertTrue(logger.getError().contains("(element has invalid label"));
+    }
+
+    @Test
+    public void testEmptyElementLabelValidation() {
+        initInspector(InvalidTestModels.createModelWithEmptyElementLabel());
+        assertFalse(inspector.inspect(model));
+        assertTrue(logger.getError().contains("(element has invalid label"));
+    }
+
+    @Test
+    public void testNoStartLabelValidation() {
+        initInspector(TestModels.createModelWithoutStartLabel());
+        assertTrue(inspector.inspect(model));
+    }
+
+    @Test
+    public void testEmptyStartLabelValidation() {
+        initInspector(TestModels.createModelWithEmptyStartLabel());
+        assertTrue(inspector.inspect(model));
+    }
+
+    @Test
     public void testInvalidElementLabelValidation() {
         initInspector(InvalidTestModels.createModelWithInvalidElementLabel());
         assertFalse(inspector.inspect(model));
@@ -82,6 +108,13 @@ public class ModelValidationTest {
     public void testComplexModelValidation() {
         initInspector(TestModels.createComplexModel());
         assertTrue(inspector.inspect(model));
+    }
+
+    @Test
+    public void testNoPathLabelValidation() {
+        initInspector(InvalidTestModels.createModelWithoutValidPathLabel());
+        assertFalse(inspector.inspect(model));
+        assertTrue(logger.getError().contains("(path without valid start element)"));
     }
 
     private void initInspector(FlocogeModel model) {

@@ -2,8 +2,8 @@ package pl.dpawlak.flocoge.model.util;
 
 import static org.junit.Assert.*;
 
-import java.util.Collection;
 import java.util.Iterator;
+import java.util.Map;
 
 import pl.dpawlak.flocoge.model.FlocogeModel;
 import pl.dpawlak.flocoge.model.ModelConnection;
@@ -11,20 +11,23 @@ import pl.dpawlak.flocoge.model.ModelElement;
 
 public class ModelsMatchingValidator {
 
-    private final Collection<ModelElement> elements;
-    private final Collection<ModelElement> expectedElements;
+    private final Map<String, ModelElement> paths;
+    private final Map<String, ModelElement> expectedPaths;
 
     public ModelsMatchingValidator(FlocogeModel model, FlocogeModel expectedModel) {
-        elements = model.startElements;
-        expectedElements = expectedModel.startElements;
+        paths = model.startElements;
+        expectedPaths = expectedModel.startElements;
     }
 
     public void validate() {
-        assertEquals(expectedElements.size(), elements.size());
-        Iterator<ModelElement> expectedElementsIt = expectedElements.iterator();
-        Iterator<ModelElement> elementsIt = elements.iterator();
-        while (expectedElementsIt.hasNext() && elementsIt.hasNext()) {
-            compareElements(expectedElementsIt.next(), elementsIt.next());
+        assertEquals(expectedPaths.size(), paths.size());
+        Iterator<Map.Entry<String, ModelElement>> expectedPathsIt = expectedPaths.entrySet().iterator();
+        Iterator<Map.Entry<String, ModelElement>> pathsIt = paths.entrySet().iterator();
+        while (expectedPathsIt.hasNext() && pathsIt.hasNext()) {
+            Map.Entry<String, ModelElement> expectedPath = expectedPathsIt.next();
+            Map.Entry<String, ModelElement> path = pathsIt.next();
+            assertEquals(expectedPath.getKey(), path.getKey());
+            compareElements(expectedPath.getValue(), path.getValue());
         }
     }
 

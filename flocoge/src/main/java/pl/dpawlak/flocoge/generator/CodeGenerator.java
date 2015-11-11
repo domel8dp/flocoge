@@ -2,6 +2,7 @@ package pl.dpawlak.flocoge.generator;
 
 import java.io.IOException;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 import com.sun.codemodel.ClassType;
@@ -90,19 +91,21 @@ public class CodeGenerator {
 
     private void fillEntities() throws CodeGenerationException {
         try {
-            for (ModelElement element : model.startElements) {
+            for (Map.Entry<String, ModelElement> path : model.startElements.entrySet()) {
+                String methodName = path.getKey();
+                ModelElement element = path.getValue();
                 JMethod method = null;
                 switch (element.shape) {
                     case ON_PAGE_REF:
-                        method = facadeClass.method(JMod.PRIVATE, codeModel.VOID, element.label);
+                        method = facadeClass.method(JMod.PRIVATE, codeModel.VOID, methodName);
                         traverseBranch(method.body(), getNext(element));
                         break;
                     case OFF_PAGE_REF:
-                        method = facadeClass.method(JMod.PUBLIC, codeModel.VOID, element.label);
+                        method = facadeClass.method(JMod.PUBLIC, codeModel.VOID, methodName);
                         traverseBranch(method.body(), getNext(element));
                         break;
                     default:
-                        method = facadeClass.method(JMod.PUBLIC, codeModel.VOID, element.label);
+                        method = facadeClass.method(JMod.PUBLIC, codeModel.VOID, methodName);
                         traverseBranch(method.body(), element);
                         break;
                 }

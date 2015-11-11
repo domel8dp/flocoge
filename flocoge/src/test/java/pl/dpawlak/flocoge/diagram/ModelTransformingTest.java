@@ -55,6 +55,11 @@ public class ModelTransformingTest {
         assertFalse(model.areExternalCallsPresent());
     }
 
+    @Test
+    public void testPathLabelTransforming() {
+        transformAndValidate(createModelWithPathLabel(), createTransformedModelWithPathLabel());
+    }
+
     private void transformAndValidate(FlocogeModel model, FlocogeModel expectedModel) {
         new ModelInspector(mock(Logger.class)).inspect(model);
         new ModelsMatchingValidator(model, expectedModel).validate();

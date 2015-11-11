@@ -1,5 +1,7 @@
 package pl.dpawlak.flocoge.log;
 
+import java.util.Map;
+
 import pl.dpawlak.flocoge.model.FlocogeModel;
 import pl.dpawlak.flocoge.model.ModelConnection;
 import pl.dpawlak.flocoge.model.ModelElement;
@@ -9,9 +11,9 @@ public class ModelPrinter {
 
     public void print(FlocogeModel model) {
         System.out.println("Diagram model:");
-        for (ModelElement element : model.startElements) {
-            System.out.println("START PATH");
-            traverseBranch(element, 1);
+        for (Map.Entry<String, ModelElement> path : model.startElements.entrySet()) {
+            System.out.println("START PATH: " + path.getKey());
+            traverseBranch(path.getValue(), 1);
         }
     }
 

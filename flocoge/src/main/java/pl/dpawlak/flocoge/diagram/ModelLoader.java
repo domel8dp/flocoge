@@ -71,7 +71,7 @@ public class ModelLoader {
             }
         }
         connections.clear();
-        model.startElements.addAll(startElements.values());
+        model.startElements.putAll(startElements);
     }
 
     private void parseElements(XMLEventReader reader, StartElement rootElement) throws DiagramLoadingException {

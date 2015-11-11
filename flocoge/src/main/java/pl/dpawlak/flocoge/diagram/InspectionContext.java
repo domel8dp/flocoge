@@ -25,7 +25,7 @@ public class InspectionContext {
     }
 
     public Iterator<ModelElement> getStartElementsIterator() {
-        return model.startElements.iterator();
+        return model.startElements.values().iterator();
     }
 
     public ModelConnection preparePathStart(ModelElement startElement) {

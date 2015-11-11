@@ -33,15 +33,29 @@ public class ModelBuilder {
         return startPath(String.valueOf(++id), shape, label);
     }
 
+    public ModelBuilder startPath(Shape shape, String label, String pathLabel) {
+        return startPath(String.valueOf(++id), shape, label, pathLabel);
+    }
+
     public ModelBuilder startPath(String id, Shape shape, String label) {
+        preparePath(id, shape, label);
+        model.startElements.put(id, lastElement);
+        return this;
+    }
+
+    public ModelBuilder startPath(String id, Shape shape, String label, String pathLabel) {
+        preparePath(id, shape, label);
+        model.startElements.put(pathLabel, lastElement);
+        return this;
+    }
+
+    private void preparePath(String id, Shape shape, String label) {
         branchStack.clear();
         lastElement = new ModelElement();
         lastElement.id = id;
         lastElement.shape = shape;
         lastElement.label = label;
-        model.startElements.add(lastElement);
         model.elements.put(id, lastElement);
-        return this;
     }
 
     public ModelBuilder connectElement(Shape shape, String label) {

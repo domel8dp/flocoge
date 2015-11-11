@@ -101,17 +101,19 @@ public class ModelElementParser {
     }
 
     private void setElementType(ModelElement modelElement, String style) {
-        if (style.contains("shape=mxgraph.flowchart.manual_operation;") ||
+        if (style.contains("shape=mxgraph.flowchart.start_1;") || style.contains("shape=mxgraph.flowchart.start_2;")) {
+            modelElement.shape = Shape.START;
+        } else if (style.contains("shape=mxgraph.flowchart.manual_operation;") ||
                 style.contains("shape=mxgraph.flowchart.data;")) {
             modelElement.shape = Shape.EVENT;
         } else if (style.contains("shape=mxgraph.flowchart.process;") ||
-                style.contains("shape=mxgraph.flowchart.predefined_process;") ||
                 style.contains("shape=mxgraph.flowchart.preparation;") ||
                 style.contains("shape=mxgraph.flowchart.database;")) {
             modelElement.shape = Shape.OPERATION;
         } else if (style.contains("shape=mxgraph.flowchart.decision;")) {
             modelElement.shape = Shape.DECISION;
-        } else if (style.contains("shape=mxgraph.flowchart.on-page_reference;")) {
+        } else if (style.contains("shape=mxgraph.flowchart.on-page_reference;") ||
+                style.contains("shape=mxgraph.flowchart.predefined_process;")) {
             modelElement.shape = Shape.ON_PAGE_REF;
         } else if (style.contains("shape=mxgraph.flowchart.off-page_reference;")) {
             modelElement.shape = Shape.OFF_PAGE_REF;

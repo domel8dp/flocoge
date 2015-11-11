@@ -7,7 +7,7 @@ import java.util.Map;
 
 public class ModelElement {
 
-    public enum Shape { EVENT, OPERATION, DECISION, ON_PAGE_REF, OFF_PAGE_REF, SKIP }
+    public enum Shape { START, EVENT, OPERATION, DECISION, ON_PAGE_REF, OFF_PAGE_REF, SKIP }
 
     public final List<ModelConnection> connections;
     public final Map<String, List<Integer>> branches;

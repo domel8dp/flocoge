@@ -37,6 +37,14 @@ public class InvalidTestModels {
             .build();
     }
 
+    public static FlocogeModel createModelWithoutElementLabel() {
+        return new ModelBuilder().startPath(Shape.ON_PAGE_REF, null).build();
+    }
+
+    public static FlocogeModel createModelWithEmptyElementLabel() {
+        return new ModelBuilder().startPath(Shape.ON_PAGE_REF, "").build();
+    }
+
     public static FlocogeModel createModelWithInvalidElementLabel() {
         return new ModelBuilder().startPath(Shape.ON_PAGE_REF, INVALID_LABEL).build();
     }
@@ -77,6 +85,15 @@ public class InvalidTestModels {
                 .branch()
                     .connectElement(Shape.OFF_PAGE_REF, "process d", "d")
                     .end()
+            .build();
+    }
+
+    public static FlocogeModel createModelWithoutValidPathLabel() {
+        return new ModelBuilder()
+            .startPath(Shape.START, "start")
+                .connectElement(Shape.SKIP, "element")
+                .connectElement(Shape.START, "")
+                .connectElement(Shape.START, "start")
             .build();
     }
 }

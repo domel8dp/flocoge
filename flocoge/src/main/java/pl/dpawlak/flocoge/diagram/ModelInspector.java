@@ -17,7 +17,7 @@ import pl.dpawlak.flocoge.model.ModelElement.Shape;
 public class ModelInspector {
 
     private final Logger log;
-    private final List<ModelElement> transformed;
+    private final List<ModelConnection> transformed;
 
     private InspectionContext context;
     private ElementInspectorFacade elementInspector;
@@ -97,7 +97,9 @@ public class ModelInspector {
         while (context.isValid() && startElementIterator.hasNext()) {
             ModelConnection branchStart = context.preparePathStart(startElementIterator.next());
             inspectBranch();
-            finishBranch(branchStart);
+            if (context.isValid() && extractPathName(branchStart)) {
+                finishBranch(branchStart);
+            }
         }
     }
 
@@ -127,19 +129,34 @@ public class ModelInspector {
         }
     }
 
-    private void finishBranch(ModelConnection branchStart) {
-        ModelElement startElement = branchStart.target;
-        if (startElement != null) {
-            if (startElement.shape != Shape.ON_PAGE_REF) {
-                transformed.add(onPageRefFirstIndex++, startElement);
+    private boolean extractPathName(ModelConnection branchStart) {
+        if (branchStart.target != null) {
+            PathNameExtractorImpl extractor = new PathNameExtractorImpl(log, branchStart.target);
+            new PathNameExtractorFacade(extractor).extract();
+            if (extractor.isValid()) {
+                branchStart.label = extractor.getLabel();
+                return true;
             } else {
-                transformed.add(startElement);
+                context.markInvalid();
+                return false;
             }
+        } else {
+            return false;
+        }
+    }
+
+    private void finishBranch(ModelConnection branchStart) {
+        if (branchStart.target.shape != Shape.ON_PAGE_REF) {
+            transformed.add(onPageRefFirstIndex++, branchStart);
+        } else {
+            transformed.add(branchStart);
         }
     }
 
     private void updateModelStartElements(FlocogeModel model) {
         model.startElements.clear();
-        model.startElements.addAll(transformed);
+        for (ModelConnection branchStart : transformed) {
+            model.startElements.put(branchStart.label, branchStart.target);
+        }
     }
 }
