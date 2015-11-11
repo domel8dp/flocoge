@@ -96,4 +96,13 @@ public class InvalidTestModels {
                 .connectElement(Shape.START, "start")
             .build();
     }
+
+    public static FlocogeModel createModelWithNonUniquePathNames() {
+        return new ModelBuilder()
+            .startPath(Shape.EVENT, "a label")
+                .connectElement(Shape.OFF_PAGE_REF, "process a")
+            .startPath(Shape.EVENT, "a label")
+                .connectElement(Shape.OFF_PAGE_REF, "process c")
+            .build();
+    }
 }

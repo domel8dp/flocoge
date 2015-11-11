@@ -117,6 +117,13 @@ public class ModelValidationTest {
         assertTrue(logger.getError().contains("(path without valid start element)"));
     }
 
+    @Test
+    public void testNonUniquePathNames() {
+        initInspector(InvalidTestModels.createModelWithNonUniquePathNames());
+        assertFalse(inspector.inspect(model));
+        assertTrue(logger.getError().contains("(multiple paths have the same name"));
+    }
+
     private void initInspector(FlocogeModel model) {
         this.model = model;
         logger = new ErrorCollectingLogger();

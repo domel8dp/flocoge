@@ -33,8 +33,7 @@ public class ModelInspector {
         initContext(model);
         traversePaths();
         if (context.isValid() && verifyElementUniqueness(model)) {
-            updateModelStartElements(model);
-            return true;
+            return updateModelStartElements(model);
         } else {
             return false;
         }
@@ -153,10 +152,16 @@ public class ModelInspector {
         }
     }
 
-    private void updateModelStartElements(FlocogeModel model) {
+    private boolean updateModelStartElements(FlocogeModel model) {
         model.startElements.clear();
         for (ModelConnection branchStart : transformed) {
-            model.startElements.put(branchStart.label, branchStart.target);
+            if (!model.startElements.containsKey(branchStart.label)) {
+                model.startElements.put(branchStart.label, branchStart.target);
+            } else {
+                log.error("Diagram error (multiple paths have the same name: '{}')", branchStart.label);
+                return false;
+            }
         }
+        return true;
     }
 }
