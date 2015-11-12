@@ -1,8 +1,10 @@
 package pl.dpawlak.flocoge.diagram;
 
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Set;
 
 import pl.dpawlak.flocoge.log.Logger;
 import pl.dpawlak.flocoge.model.ModelConnection;
@@ -90,9 +92,17 @@ public class ElementInspectorImpl implements ElementInspector {
     public void validateAndTransformConnectionsLabels() {
         ModelElement element = context.getElement();
         if (element.shape == Shape.DECISION) {
-            for(ModelConnection connection : element.connections) {
+            Set<String> branchLabels = new HashSet<>();
+            for (ModelConnection connection : element.connections) {
                 if (ModelNamesUtils.validateElementLabel(connection.label)) {
                     connection.label = ModelNamesUtils.convertConnectionLabel(connection.label);
+                    if (!branchLabels.contains(connection.label)) {
+                        branchLabels.add(connection.label);
+                    } else {
+                        setError("Diagram error (decision element '{}' has multiple branches with same label: '{}')",
+                                element.label, connection.label);
+                            return;
+                    }
                 } else {
                     setError("Diagram error (decision element '{}' branch has invalid label: '{}')", element.label,
                         connection.label);

@@ -68,7 +68,7 @@ public class InvalidTestModels {
             .build();
     }
 
-    public static FlocogeModel createModelWithNonUniqueDecisionBranches() {
+    public static FlocogeModel createModelWithMismatchedDecisionBranches() {
         return new ModelBuilder()
             .startPath(Shape.EVENT, "a label")
                 .connectElement(Shape.DECISION, "a decision")
@@ -84,6 +84,18 @@ public class InvalidTestModels {
                     .end()
                 .branch()
                     .connectElement(Shape.OFF_PAGE_REF, "process d", "d")
+                    .end()
+            .build();
+    }
+
+    public static FlocogeModel createModelWithNonUniqueDecisionBranches() {
+        return new ModelBuilder()
+            .startPath(Shape.DECISION, "a decision")
+                .branch()
+                    .connectElement(Shape.OFF_PAGE_REF, "process c", "y")
+                    .end()
+                .branch()
+                    .connectElement(Shape.OFF_PAGE_REF, "process d", "y")
                     .end()
             .build();
     }

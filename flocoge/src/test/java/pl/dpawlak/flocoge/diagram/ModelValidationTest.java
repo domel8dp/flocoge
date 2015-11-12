@@ -98,10 +98,17 @@ public class ModelValidationTest {
     }
 
     @Test
+    public void testMismatchedBranchesValidation() {
+        initInspector(InvalidTestModels.createModelWithMismatchedDecisionBranches());
+        assertFalse(inspector.inspect(model));
+        assertTrue(logger.getError().contains("have different branches"));
+    }
+
+    @Test
     public void testNonUniqueBranchesValidation() {
         initInspector(InvalidTestModels.createModelWithNonUniqueDecisionBranches());
         assertFalse(inspector.inspect(model));
-        assertTrue(logger.getError().contains("have different branches"));
+        assertTrue(logger.getError().contains("has multiple branches with same label"));
     }
 
     @Test
