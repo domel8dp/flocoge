@@ -116,4 +116,19 @@ public class MergePointsImpl implements MergePoints {
         int otherBranchIndex = branches.get(decisionId).get(0);
         decision.mergePoints[branchIndex] = decision.mergePoints[otherBranchIndex] = context.getId();
     }
+
+    @Override
+    public boolean anyDecisionBranchClosed() {
+        return !context.getOpenDecisions().containsAll(decision.openDecissions);
+    }
+
+    @Override
+    public void interleavedBranchingDetected() {
+        log.error("Diagram error (element '{}' is merging an interleaved branch)", context.getLabel());
+    }
+
+    @Override
+    public void removeFromOpenDecisions() {
+        context.removeFromOpenDecisions(decisionId);
+    }
 }

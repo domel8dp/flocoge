@@ -1,9 +1,11 @@
 package pl.dpawlak.flocoge.diagram;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import pl.dpawlak.flocoge.model.DecisionMeta;
 import pl.dpawlak.flocoge.model.FlocogeModel;
@@ -18,9 +20,11 @@ public class InspectionContext {
     private ModelElement element;
     private ModelConnection elementConnection;
     private Map<String, Integer> currentBranches;
+    private Set<String> openDecisions;
 
     public InspectionContext(FlocogeModel model) {
         this.model = model;
+        openDecisions = new HashSet<>();
         valid = true;
     }
 
@@ -75,7 +79,8 @@ public class InspectionContext {
 
     public void addDecissionMeta() {
         if (element != null) {
-            model.decisions.put(element.id, new DecisionMeta(element.id, element.connections.size()));
+            model.decisions.put(element.id, new DecisionMeta(element.id, element.connections.size(), openDecisions));
+            openDecisions.add(element.id);
         }
     }
 
@@ -138,6 +143,14 @@ public class InspectionContext {
         model.markExternalCallsPresent();
     }
 
+    public void removeFromOpenDecisions(String decisionId) {
+        openDecisions.remove(decisionId);
+    }
+
+    public Set<String> getOpenDecisions() {
+        return openDecisions;
+    }
+
     public static class DecisionBackup {
         private final ModelElement element;
         private final  Map<String, Integer> currentBranches;
@@ -154,5 +167,9 @@ public class InspectionContext {
 
     void setElement(ModelElement element) {
         this.element = element;
+    }
+
+    void setOpenDecisions(Set<String> openDecisions) {
+        this.openDecisions = openDecisions;
     }
 }

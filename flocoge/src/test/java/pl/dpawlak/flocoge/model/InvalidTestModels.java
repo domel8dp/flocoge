@@ -124,4 +124,29 @@ public class InvalidTestModels {
                 .connectElement(Shape.ON_PAGE_REF, "call")
             .build();
     }
+
+    public static FlocogeModel createModelWithInterleavingBranches() {
+        return new ModelBuilder()
+            .startPath(Shape.START, "interleaving")
+                .connectElement(Shape.DECISION, "decision 1")
+                    .branch()
+                        .connectElement(Shape.OPERATION, "operation a", "a")
+                        .connectElement(Shape.OPERATION, "operation 1")
+                        .markBookmark("join 1")
+                        .connectElement(Shape.OPERATION, "operation 2")
+                        .markBookmark("join 2")
+                        .connectElement(Shape.SKIP, "end")
+                        .end()
+                    .branch()
+                        .connectElement(Shape.DECISION, "decision 2", "b")
+                            .branch()
+                                .connectBookmark("join 1", "c")
+                                .end()
+                            .branch()
+                                .connectElement(Shape.OPERATION, "operation d", "d")
+                                .connectBookmark("join 2")
+                                .end()
+                        .end()
+            .build();
+    }
 }

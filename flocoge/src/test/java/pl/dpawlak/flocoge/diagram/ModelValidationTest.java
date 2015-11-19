@@ -138,6 +138,30 @@ public class ModelValidationTest {
         assertTrue(logger.getError().contains("references missing path)"));
     }
 
+    /*
+     *                  (start)
+     *                     |
+     *      +---------(decision 1)
+     *      | a            | b
+     * (operation a)  (decision 2)-----+
+     *      |              | c         | d
+     *      +--------------+      (operation d)
+     *                     |           |
+     *                (operation 1)    |
+     *                     |           |
+     *                     +-----------+
+     *                     |
+     *                (operation 2)
+     *                     |
+     *                   (end)
+     */
+    @Test
+    public void testInterleavingBranches() {
+        initInspector(InvalidTestModels.createModelWithInterleavingBranches());
+        assertFalse(inspector.inspect(model));
+        assertTrue(logger.getError().contains("is merging an interleaved branch)"));
+    }
+
     private void initInspector(FlocogeModel model) {
         this.model = model;
         logger = new ErrorCollectingLogger();

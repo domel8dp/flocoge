@@ -5,8 +5,10 @@ import static org.junit.Assert.*;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.Map;
+import java.util.Set;
 
 import org.junit.Test;
 
@@ -19,6 +21,7 @@ public class MergePointsTest {
 
     private static final String DECISION_ID = "a decision";
     private static final String OTHER_DECISION_ID = "other decision";
+    private static final String OPEN_DECISION_ID = "open decision";
     private static final String ELEMENT_ID = "an element";
     private static final String OTHER_ELEMENT_ID = "other element";
 
@@ -62,7 +65,7 @@ public class MergePointsTest {
     public void inspectAlreadyVisitedNodeOnDifferentBranch() {
         FlocogeModel model = modelWithDecisionMeta(1);
         context = new InspectionContext(model);
-        model.decisions.put(OTHER_DECISION_ID, new DecisionMeta(OTHER_DECISION_ID, 2));
+        model.decisions.put(OTHER_DECISION_ID, new DecisionMeta(OTHER_DECISION_ID, 2, Collections.<String>emptySet()));
         context.setElement(nodeWithVisitedBranches(0));
         context.getBranches().put(OTHER_DECISION_ID, Arrays.asList(0));
         Map<String, Integer> currentBranches = new HashMap<>();
@@ -78,13 +81,15 @@ public class MergePointsTest {
     }
 
     /*
-     * inspect node with decision id and other branch index, without merge point in meta -> save merge point for both branches
+     * inspect node with decision id and other branch index, without merge point in meta ->
+     * save merge point for both branches, remove from opened decisions
      */
     @Test
     public void inspectNewMergePoint() {
-        FlocogeModel model = modelWithDecisionMeta(3);
+        FlocogeModel model = modelWithDecisionMeta(3, DECISION_ID);
         ModelElement element = nodeWithVisitedBranches(0);
         initMergePoints(model, element, 2);
+        Set<String> openDecisions = setOpenDecisions(DECISION_ID);
 
         new MergePointsFacade(mergePoints).inspectNode();
         DecisionMeta decisionMeta = model.decisions.get(DECISION_ID);
@@ -92,6 +97,7 @@ public class MergePointsTest {
         assertEquals(ELEMENT_ID, decisionMeta.mergePoints[0]);
         assertNull(decisionMeta.mergePoints[1]);
         assertEquals(ELEMENT_ID, decisionMeta.mergePoints[2]);
+        assertTrue(openDecisions.isEmpty());
     }
 
     /*
@@ -144,9 +150,28 @@ public class MergePointsTest {
         assertEquals(Collections.singletonMap(DECISION_ID, Arrays.asList(0, 1)), element.branches);
     }
 
-    private FlocogeModel modelWithDecisionMeta(int branchCount) {
+    /*
+     * inspect node with decision id and other branch index, without merge point in meta, with different opened decisions ->
+     * mark node invalid (interleaved branches)
+     */
+    @Test
+    public void inspectMergePointOfInterleavedBranch() {
+        FlocogeModel model = modelWithDecisionMeta(3, OPEN_DECISION_ID);
+        ModelElement element = nodeWithVisitedBranches(0);
+        initMergePoints(model, element, 2);
+        setOpenDecisions(DECISION_ID);
+
+        new MergePointsFacade(mergePoints).inspectNode();
+
+        assertFalse(context.isValid());
+        assertTrue(logger.getError().contains("is merging an interleaved branch)"));
+    }
+
+    private FlocogeModel modelWithDecisionMeta(int branchCount, String... openDecisionIds) {
         FlocogeModel model = new FlocogeModel();
-        DecisionMeta decisionMeta = new DecisionMeta(DECISION_ID, branchCount);
+        Set<String> openDecisions = new HashSet<>();
+        openDecisions.addAll(Arrays.asList(openDecisionIds));
+        DecisionMeta decisionMeta = new DecisionMeta(DECISION_ID, branchCount, openDecisions);
         model.decisions.put(DECISION_ID, decisionMeta);
         return model;
     }
@@ -170,5 +195,12 @@ public class MergePointsTest {
 
     private Map<String, Integer> currentBranches(int branchIndex) {
         return Collections.singletonMap(DECISION_ID, branchIndex);
+    }
+
+    private Set<String> setOpenDecisions(String... decisionIds) {
+        Set<String> openDecisions = new HashSet<>();
+        openDecisions.addAll(Arrays.asList(decisionIds));
+        context.setOpenDecisions(openDecisions);
+        return openDecisions;
     }
 }
