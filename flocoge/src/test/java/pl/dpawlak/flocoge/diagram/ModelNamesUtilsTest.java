@@ -18,6 +18,7 @@ public class ModelNamesUtilsTest {
     public void testValidLabels() {
         for (int i = 0; i < VALID_LABELS.length; i++) {
             assertTrue(ModelNamesUtils.validateElementLabel(VALID_LABELS[i]));
+            assertFalse(ModelNamesUtils.checkIfReservedWord(VALID_NAMES[i]));
             assertEquals(VALID_NAMES[i], ModelNamesUtils.convertElementLabel(VALID_LABELS[i]));
             assertEquals(VALID_BRANCH_NAMES[i], ModelNamesUtils.convertConnectionLabel(VALID_LABELS[i]));
         }

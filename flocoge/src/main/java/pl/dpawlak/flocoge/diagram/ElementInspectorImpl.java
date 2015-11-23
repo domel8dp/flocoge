@@ -67,9 +67,12 @@ public class ElementInspectorImpl implements ElementInspector {
         if (element.shape == Shape.START && (element.label == null || element.label.trim().length() == 0)) {
             return;
         }
-        if (ModelNamesUtils.validateElementLabel(element.label)) {
+        boolean result = ModelNamesUtils.validateElementLabel(element.label);
+        if (result) {
             element.label = ModelNamesUtils.convertElementLabel(element.label);
-        } else {
+            result = !ModelNamesUtils.checkIfReservedWord(element.label);
+        }
+        if (!result) {
             setError("Diagram error (element has invalid label: '{}')", element.label);
         }
     }

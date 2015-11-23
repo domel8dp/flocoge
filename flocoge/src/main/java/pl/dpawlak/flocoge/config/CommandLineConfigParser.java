@@ -4,6 +4,7 @@ import java.io.File;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import pl.dpawlak.flocoge.diagram.ModelNamesUtils;
 import pl.dpawlak.flocoge.log.Logger;
 
 public class CommandLineConfigParser {
@@ -113,13 +114,17 @@ public class CommandLineConfigParser {
     }
 
     private boolean parsePackageName(String name) {
-        if (name.matches("[a-zA-Z_$][a-zA-Z_$0-9]*(\\.[a-zA-Z_$][a-zA-Z_$0-9]*)*")) {
+        boolean result = name.matches("[a-zA-Z_$][a-zA-Z_$0-9]*(\\.[a-zA-Z_$][a-zA-Z_$0-9]*)*");
+        if (result) {
             packageName = name;
-            return true;
-        } else {
-            log.error("Invalid package name ({})", name);
-            return false;
+            for (String part : name.split("\\.")) {
+                result &= !ModelNamesUtils.checkIfReservedWord(part);
+            }
         }
+        if (!result) {
+            log.error("Invalid package name ({})", name);
+        }
+        return result;
     }
 
     private void convertDiagramName() {

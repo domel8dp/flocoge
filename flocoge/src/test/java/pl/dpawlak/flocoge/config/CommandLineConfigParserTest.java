@@ -23,6 +23,7 @@ public class CommandLineConfigParserTest {
     private static final String INVALID_SRC_FOLDER = "build.gradle";
     private static final String INVALID_PACKAGE_NAME = "pl.dpawlak.2.invalid";
     private static final String MINIMAL_VALID_PACKAGE_NAME = "p";
+    private static final String RESERVED_WORD_PACKAGE_NAME = "pl.true.flocoge";
 
     @Test
     public void testInsuficientParameters() {
@@ -71,5 +72,11 @@ public class CommandLineConfigParserTest {
     public void testMinimalPackageNameParameters() throws IOException {
         CommandLineConfigParser parser = new CommandLineConfigParser(mock(Logger.class));
         assertTrue(parser.parse(new String[] {VALID_DIAGRAM_PATH, VALID_SRC_FOLDER, MINIMAL_VALID_PACKAGE_NAME}));
+    }
+
+    @Test
+    public void testPackageNameWithReservedWord() {
+        CommandLineConfigParser parser = new CommandLineConfigParser(mock(Logger.class));
+        assertFalse(parser.parse(new String[] {VALID_DIAGRAM_PATH, VALID_SRC_FOLDER, RESERVED_WORD_PACKAGE_NAME}));
     }
 }
