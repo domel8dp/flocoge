@@ -1,28 +1,14 @@
 package pl.dpawlak.flocoge.diagram;
 
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public final class ModelNamesUtils {
-    
-    private static final Set<String> RESERVED_WORDS = new HashSet<>(Arrays.asList("true", "false", "null", "abstract",
-        "continue", "for", "new", "switch", "assert", "default", "goto", "package", "synchronized", "boolean", "do",
-        "if", "private", "this", "break", "double", "implements", "protected", "throw", "byte", "else", "import",
-        "public", "throws", "case", "enum", "instanceof", "return", "transient", "catch", "extends", "int", "short",
-        "try", "char", "final", "interface", "static", "void", "class", "finally", "long", "strictfp", "volatile",
-        "const", "float", "native", "super", "while"));
 
     private ModelNamesUtils() { }
 
     public static boolean validateElementLabel(String label) {
         return label != null && label.replaceAll("<br>", " ").matches("[^a-zA-Z]*[a-zA-Z].*");
-    }
-
-    public static boolean checkIfReservedWord(String word) {
-        return RESERVED_WORDS.contains(word);
     }
 
     public static String convertElementLabel(String label) {
