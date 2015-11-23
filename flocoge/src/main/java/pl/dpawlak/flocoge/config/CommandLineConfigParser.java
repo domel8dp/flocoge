@@ -113,7 +113,7 @@ public class CommandLineConfigParser {
     }
 
     private boolean parsePackageName(String name) {
-        if (name.matches("[a-z]{2,3}(\\.[a-zA-Z][a-zA-Z_$0-9]*)*")) {
+        if (name.matches("[a-zA-Z_$][a-zA-Z_$0-9]*(\\.[a-zA-Z_$][a-zA-Z_$0-9]*)*")) {
             packageName = name;
             return true;
         } else {

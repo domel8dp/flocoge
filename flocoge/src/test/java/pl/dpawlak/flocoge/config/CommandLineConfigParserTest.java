@@ -21,7 +21,8 @@ public class CommandLineConfigParserTest {
     private static final String HELP_FLAG = "--help";
     private static final String INVALID_DIAGRAM_PATH = "build.xml";
     private static final String INVALID_SRC_FOLDER = "build.gradle";
-    private static final String INVALID_PACKAGE_NAME = "_InvalidPackage";
+    private static final String INVALID_PACKAGE_NAME = "pl.dpawlak.2.invalid";
+    private static final String MINIMAL_VALID_PACKAGE_NAME = "p";
 
     @Test
     public void testInsuficientParameters() {
@@ -64,5 +65,11 @@ public class CommandLineConfigParserTest {
     public void testInvalidPackageName() {
         CommandLineConfigParser parser = new CommandLineConfigParser(mock(Logger.class));
         assertFalse(parser.parse(new String[] {VALID_DIAGRAM_PATH, VALID_SRC_FOLDER, INVALID_PACKAGE_NAME}));
+    }
+
+    @Test
+    public void testMinimalPackageNameParameters() throws IOException {
+        CommandLineConfigParser parser = new CommandLineConfigParser(mock(Logger.class));
+        assertTrue(parser.parse(new String[] {VALID_DIAGRAM_PATH, VALID_SRC_FOLDER, MINIMAL_VALID_PACKAGE_NAME}));
     }
 }
