@@ -1,22 +1,13 @@
 package pl.dpawlak.flocoge.config;
 
 import java.io.File;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import pl.dpawlak.flocoge.diagram.ModelNamesUtils;
 import pl.dpawlak.flocoge.log.Logger;
 
 public class CommandLineConfigParser {
-
-    private static final Set<String> RESERVED_WORDS = new HashSet<>(Arrays.asList("true", "false", "null", "abstract",
-        "continue", "for", "new", "switch", "assert", "default", "goto", "package", "synchronized", "boolean", "do",
-        "if", "private", "this", "break", "double", "implements", "protected", "throw", "byte", "else", "import",
-        "public", "throws", "case", "enum", "instanceof", "return", "transient", "catch", "extends", "int", "short",
-        "try", "char", "final", "interface", "static", "void", "class", "finally", "long", "strictfp", "volatile",
-        "const", "float", "native", "super", "while"));
 
     private final Logger log;
 
@@ -127,7 +118,7 @@ public class CommandLineConfigParser {
         if (result) {
             packageName = name;
             for (String part : name.split("\\.")) {
-                result &= !RESERVED_WORDS.contains(part);
+                result &= !ModelNamesUtils.isReservedWord(part);
             }
         }
         if (!result) {
@@ -165,7 +156,7 @@ public class CommandLineConfigParser {
         log.log("Draw.io Flowchart Code Generator");
         log.log("-------");
         log.log("Usage:");
-        log.log("[flags] <diagram path> <generated sources folder> <package name>");
+        log.log("[flags] <diagram path> <output folder> <package name>");
         log.log("");
         log.log("Flags:");
         log.log("--help -h : print this help message");
