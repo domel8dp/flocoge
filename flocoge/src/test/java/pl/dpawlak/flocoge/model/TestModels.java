@@ -262,4 +262,43 @@ public class TestModels {
                 .connectElement(Shape.OPERATION, "enableUI")
             .build();
     }
+
+    public static FlocogeModel createTransformedAdditionalModel() {
+        return new ModelBuilder()
+            .startPath(Shape.START, "publicPath", "publicPath")
+                .connectElement(Shape.ON_PAGE_REF, "localPath")
+                .connectElement(Shape.DECISION, "mainIf")
+                    .branch()
+                        .connectElement(Shape.DECISION, "hangingIf", "true")
+                            .branch()
+                                .connectElement(Shape.OPERATION, "hangingOperation", "true")
+                                .end()
+                            .branch()
+                                .connectElement(Shape.OFF_PAGE_REF, "finalOperation", "true")
+                                .markBookmark("JOIN 1")
+                                .end()
+                        .end()
+                    .branch()
+                        .connectBookmark("JOIN 1", "false")
+                        .end()
+            .startPath(Shape.OFF_PAGE_REF, "publicExternalPath", "publicExternalPath")
+                .connectElement(Shape.ON_PAGE_REF, "localPath")
+                .connectElement(Shape.DECISION, "mainSwitch")
+                    .branch()
+                        .connectElement(Shape.DECISION, "hangingSwitch", "A")
+                            .branch()
+                                .connectElement(Shape.OPERATION, "hangingOperation", "A1")
+                                .end()
+                            .branch()
+                                .connectElement(Shape.OFF_PAGE_REF, "finalOperation", "A2")
+                                .markBookmark("JOIN 2")
+                                .end()
+                        .end()
+                    .branch()
+                        .connectBookmark("JOIN 2", "B")
+                        .end()
+            .startPath(Shape.ON_PAGE_REF, "localPath", "localPath")
+                .connectElement(Shape.OFF_PAGE_REF, "finalOperation")
+            .build();
+    }
 }

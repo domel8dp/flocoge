@@ -24,6 +24,11 @@ public class CodeGeneratorTest {
         generateAndValidate(createTransformedComplexModel(), createComplexCodeModel());
     }
 
+    @Test
+    public void testAdditionalCodeModelGeneration() throws CodeGenerationException {
+        generateAndValidate(createTransformedAdditionalModel(), createAdditionalCodeModel());
+    }
+
     private void generateAndValidate(FlocogeModel model, TestCodeModel expectedCodeModel)
             throws CodeGenerationException {
         TestCodeModel codeModel = new TestCodeModel();
