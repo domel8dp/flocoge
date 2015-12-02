@@ -1,6 +1,6 @@
 package pl.dpawlak.flocoge.generator;
 
-interface CodeIf {
+public interface CodeIf {
 
     CodeBlock _then();
     CodeBlock _else();

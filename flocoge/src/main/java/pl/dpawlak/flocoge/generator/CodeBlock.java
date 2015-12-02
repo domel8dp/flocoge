@@ -1,6 +1,6 @@
 package pl.dpawlak.flocoge.generator;
 
-interface CodeBlock {
+public interface CodeBlock {
 
     void call(String name);
     void callDelegate(String name);

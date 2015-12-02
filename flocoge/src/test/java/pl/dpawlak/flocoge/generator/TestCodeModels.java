@@ -1,0 +1,80 @@
+package pl.dpawlak.flocoge.generator;
+
+import pl.dpawlak.flocoge.generator.util.TestCodeModel;
+import pl.dpawlak.flocoge.generator.util.TestCodeModelBuilder;
+
+public class TestCodeModels {
+
+    public static TestCodeModel createTestFileCodeModel() throws CodeGenerationException {
+        return new TestCodeModelBuilder()
+            .startPath("inputAvailable")
+                .callDelegate("performAction")
+                .callIf("isDataValid")
+                    .beginThen()
+                        .callDelegate("prepareDataForStorage")
+                        .callDelegate("saveInStorage")
+                        .end()
+                    .beginElse()
+                        .callLocal("handleError")
+                        .end()
+            .startPath("userAction")
+                .callLocal("performDefinedAction")
+                .callSwitch("whichUserType", "NORMAL", "VIP", "ADMIN")
+                    .beginCase("NORMAL")
+                        .callExternal("processNormalUserRequest")
+                        .callBreak()
+                        .end()
+                    .beginCase("VIP")
+                        .callExternal("processVipRequest")
+                        .callBreak()
+                        .end()
+                    .beginCase("ADMIN")
+                        .callExternal("processAdminRequest")
+                        .callBreak()
+                        .end()
+            .startPrivatePath("handleError")
+                .callDelegate("showErrorMesage")
+            .startPrivatePath("performDefinedAction")
+                .callDelegate("runDefinedAction")
+            .build();
+    }
+
+    public static TestCodeModel createComplexCodeModel() {
+        return new TestCodeModelBuilder()
+            .startPath("areThereSavedDevices")
+                .callIf("areThereSavedDevices")
+                    .beginThen()
+                    .callDelegate("displayDevices")
+                        .end()
+                    .beginElse()
+                        .callIf("doYouWantToDiscover")
+                            .beginThen()
+                                .callDelegate("openDiscoveryTab")
+                                .callLocal("discoveryFinished")
+                                .end()
+                            .beginElse()
+                                .callDelegate("displayMessage")
+                                .end()
+                        .end()
+            .startPath("restorePoll")
+                .callIf("connectionRequest")
+                    .beginThen()
+                        .end()
+                    .beginElse()
+                        .callDelegate("restoreFullPollOperation")
+                        .callDelegate("resetRequestCounter")
+                        .end()
+                .callLocal("discoveryFinished")
+                .callDelegate("enableUI")
+            .startPrivatePath("discoveryFinished")
+                .callDelegate("hideProgressCancel")
+                .callIf("foundDevices")
+                    .beginThen()
+                        .end()
+                    .beginElse()
+                        .callDelegate("showMessage")
+                        .end()
+                .callDelegate("enableUIElements")
+            .build();
+    }
+}

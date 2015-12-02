@@ -2,9 +2,7 @@ package pl.dpawlak.flocoge.generator;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import com.sun.codemodel.ClassType;
 import com.sun.codemodel.JBlock;
@@ -24,8 +22,6 @@ import pl.dpawlak.flocoge.diagram.ModelNamesUtils;
 class DefaultCodeModel implements CodeModel {
 
     private final JCodeModel codeModel;
-    private final Set<String> delegateMethods;
-    private final Set<String> externalDelegateMethods;
 
     private String baseName;
     private JDefinedClass interfaceClass;
@@ -36,8 +32,6 @@ class DefaultCodeModel implements CodeModel {
 
     public DefaultCodeModel() {
         codeModel = new JCodeModel();
-        delegateMethods = new HashSet<>();
-        externalDelegateMethods = new HashSet<>();
     }
 
     @Override
@@ -96,31 +90,22 @@ class DefaultCodeModel implements CodeModel {
 
     @Override
     public void addMethod(String name) {
-        if (!delegateMethods.contains(name)) {
-            interfaceClass.method(JMod.NONE, codeModel.VOID, name);
-            delegateMethods.add(name);
-        }
+        interfaceClass.method(JMod.NONE, codeModel.VOID, name);
     }
 
     @Override
     public void addBooleanMethod(String name) {
-        if (!delegateMethods.contains(name)) {
-            interfaceClass.method(JMod.NONE, codeModel.BOOLEAN, name);
-            delegateMethods.add(name);
-        }
+        interfaceClass.method(JMod.NONE, codeModel.BOOLEAN, name);
     }
 
     @Override
     public void addEnumMethod(String name, List<String> values) throws CodeGenerationException {
         try {
-            if (!delegateMethods.contains(name)) {
-                JDefinedClass resultEnum = interfaceClass._enum(ModelNamesUtils.createEnumName(name));
-                for (String value : values) {
-                    resultEnum.enumConstant(value);
-                }
-                interfaceClass.method(JMod.NONE, resultEnum, name);
-                delegateMethods.add(name);
+            JDefinedClass resultEnum = interfaceClass._enum(ModelNamesUtils.createEnumName(name));
+            for (String value : values) {
+                resultEnum.enumConstant(value);
             }
+            interfaceClass.method(JMod.NONE, resultEnum, name);
         } catch (JClassAlreadyExistsException exception) {
             throw new CodeGenerationException(exception);
         }
@@ -128,10 +113,7 @@ class DefaultCodeModel implements CodeModel {
 
     @Override
     public void addExternalMethod(String name) {
-        if (!externalDelegateMethods.contains(name)) {
-            externalClass.method(JMod.NONE, codeModel.VOID, name);
-            externalDelegateMethods.add(name);
-        }
+        externalClass.method(JMod.NONE, codeModel.VOID, name);
     }
 
     @Override

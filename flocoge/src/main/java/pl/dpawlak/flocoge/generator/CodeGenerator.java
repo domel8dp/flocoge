@@ -1,8 +1,10 @@
 package pl.dpawlak.flocoge.generator;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import pl.dpawlak.flocoge.config.Configuration;
 import pl.dpawlak.flocoge.log.Logger;
@@ -17,13 +19,17 @@ public class CodeGenerator {
     private final Configuration config;
     private final Logger log;
     private final CodeModel codeModel;
+    private final Set<String> delegateMethods;
+    private final Set<String> externalDelegateMethods;
 
     private FlocogeModel model;
 
     public CodeGenerator(Configuration config, Logger log) {
         this.config = config;
         this.log = log;
-        this.codeModel = new DefaultCodeModel();
+        delegateMethods = new HashSet<>();
+        externalDelegateMethods = new HashSet<>();
+        codeModel = new DefaultCodeModel();
     }
 
     public void generate(FlocogeModel model) throws CodeGenerationException {
@@ -71,7 +77,7 @@ public class CodeGenerator {
             } else {
                 switch (element.shape) {
                     case OPERATION:
-                        generateDelegateCall(body, element);
+                        generateDelegateCall(body, element.label);
                         break;
                     case ON_PAGE_REF:
                         generateLocalCall(body, element);
@@ -88,9 +94,12 @@ public class CodeGenerator {
         return element;
     }
 
-    private void generateDelegateCall(CodeBlock body, ModelElement element) {
-        codeModel.addMethod(element.label);
-        body.callDelegate(element.label);
+    private void generateDelegateCall(CodeBlock body, String name) {
+        if (!delegateMethods.contains(name)) {
+            codeModel.addMethod(name);
+            delegateMethods.add(name);
+        }
+        body.callDelegate(name);
     }
 
     private void generateLocalCall(CodeBlock body, ModelElement element) {
@@ -98,13 +107,19 @@ public class CodeGenerator {
     }
 
     private void generateExternalDelegateCall(CodeBlock body, ModelElement element) {
-        codeModel.addExternalMethod(element.label);
+        if (!externalDelegateMethods.contains(element.label)) {
+            codeModel.addExternalMethod(element.label);
+            externalDelegateMethods.add(element.label);
+        }
         body.callExternal(element.label);
     }
 
     private ModelElement generateDelegateBooleanCall(CodeBlock body, ModelElement element, String currentMergePoint)
             throws CodeGenerationException {
-        codeModel.addBooleanMethod(element.label);
+        if (!delegateMethods.contains(element.label)) {
+            codeModel.addBooleanMethod(element.label);
+            delegateMethods.add(element.label);
+        }
         DecisionMeta meta = model.decisions.get(element.id);
         CodeIf if1 = body._if(element.label);
         ModelElement finalElement = traverseBooleanBranch(if1._then(), 0, element, meta, currentMergePoint);
@@ -128,7 +143,10 @@ public class CodeGenerator {
 
     private ModelElement generateDelegateEnumCall(CodeBlock body, ModelElement element, String currentMergePoint)
             throws CodeGenerationException {
-        codeModel.addEnumMethod(element.label, getConnectionLabels(element));
+        if (!delegateMethods.contains(element.label)) {
+            codeModel.addEnumMethod(element.label, getConnectionLabels(element));
+            delegateMethods.add(element.label);
+        }
         DecisionMeta meta = model.decisions.get(element.id);
         CodeSwitch _switch = body._switch(element.label);
         int index = 0;
@@ -170,5 +188,13 @@ public class CodeGenerator {
 
     private boolean isBooleanDecision(ModelElement element) {
         return element.connections.size() == 2 && element.connections.get(0).label.equals(ModelConnection.TRUE);
+    }
+
+    CodeGenerator(Configuration config, Logger log, CodeModel codeModel) {
+        this.config = config;
+        this.log = log;
+        this.codeModel = codeModel;
+        delegateMethods = new HashSet<>();
+        externalDelegateMethods = new HashSet<>();
     }
 }

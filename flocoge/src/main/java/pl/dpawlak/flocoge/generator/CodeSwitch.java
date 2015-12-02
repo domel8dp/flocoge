@@ -1,6 +1,6 @@
 package pl.dpawlak.flocoge.generator;
 
-interface CodeSwitch {
+public interface CodeSwitch {
 
     CodeBlock _case(String name);
 }
