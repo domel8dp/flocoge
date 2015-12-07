@@ -274,7 +274,7 @@ public class TestModels {
                                 .connectElement(Shape.OPERATION, "hangingOperation", "true")
                                 .end()
                             .branch()
-                                .connectElement(Shape.OFF_PAGE_REF, "finalOperation", "true")
+                                .connectElement(Shape.OFF_PAGE_REF, "finalOperation", "false")
                                 .markBookmark("JOIN 1")
                                 .end()
                         .end()
@@ -299,6 +299,50 @@ public class TestModels {
                         .end()
             .startPath(Shape.ON_PAGE_REF, "localPath", "localPath")
                 .connectElement(Shape.OFF_PAGE_REF, "finalOperation")
+            .build();
+    }
+
+    public static FlocogeModel createTransformedModelWithEmptyIf() {
+        return new ModelBuilder()
+            .startPath(Shape.START, "start", "enableUI")
+                .connectElement(Shape.DECISION, "enableUI")
+                    .branch()
+                        .connectElement(Shape.OPERATION, "finalOperation", "true")
+                        .markBookmark("JOIN")
+                        .end()
+                    .branch()
+                        .connectElement(Shape.OPERATION, "operation", "false")
+                        .connectBookmark("JOIN")
+                        .end()
+            .build();
+    }
+
+    public static FlocogeModel createTransformedModelWithEmptyElse() {
+        return new ModelBuilder()
+            .startPath(Shape.START, "start", "enableUI")
+                .connectElement(Shape.DECISION, "enableUI")
+                    .branch()
+                        .connectElement(Shape.OPERATION, "operation", "true")
+                        .connectElement(Shape.OPERATION, "finalOperation")
+                        .markBookmark("JOIN")
+                        .end()
+                    .branch()
+                        .connectBookmark("JOIN", "false")
+                        .end()
+            .build();
+    }
+
+    public static FlocogeModel createTransformedModelWithEmptyIfAndElse() {
+        return new ModelBuilder()
+            .startPath(Shape.START, "start", "enableUI")
+                .connectElement(Shape.DECISION, "enableUI")
+                    .branch()
+                        .connectElement(Shape.OPERATION, "finalOperation", "true")
+                        .markBookmark("JOIN")
+                        .end()
+                    .branch()
+                        .connectBookmark("JOIN", "false")
+                        .end()
             .build();
     }
 }

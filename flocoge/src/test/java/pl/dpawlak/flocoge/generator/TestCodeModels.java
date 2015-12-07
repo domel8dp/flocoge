@@ -57,10 +57,8 @@ public class TestCodeModels {
                                 .end()
                         .end()
             .startPath("restorePoll")
-                .callIf("connectionRequest")
+                .callIfNot("connectionRequest")
                     .beginThen()
-                        .end()
-                    .beginElse()
                         .callDelegate("restoreFullPollOperation")
                         .callDelegate("resetRequestCounter")
                         .end()
@@ -68,10 +66,8 @@ public class TestCodeModels {
                 .callDelegate("enableUI")
             .startPrivatePath("discoveryFinished")
                 .callDelegate("hideProgressCancel")
-                .callIf("foundDevices")
+                .callIfNot("foundDevices")
                     .beginThen()
-                        .end()
-                    .beginElse()
                         .callDelegate("showMessage")
                         .end()
                 .callDelegate("enableUIElements")
@@ -89,10 +85,6 @@ public class TestCodeModels {
                                 .callDelegate("hangingOperation")
                                 .callReturn()
                                 .end()
-                            .beginElse()
-                                .end()
-                        .end()
-                    .beginElse()
                         .end()
                 .callExternal("finalOperation")
             .startExternalPath("publicExternalPath")
@@ -115,6 +107,36 @@ public class TestCodeModels {
                 .callExternal("finalOperation")
             .startPrivatePath("localPath")
                 .callExternal("finalOperation")
+            .build();
+    }
+
+    public static TestCodeModel createCodeModelWithEmptyIf() throws CodeGenerationException {
+        return new TestCodeModelBuilder()
+            .startPath("enableUI")
+                .callIfNot("enableUI")
+                    .beginThen()
+                        .callDelegate("operation")
+                        .end()
+                .callDelegate("finalOperation")
+            .build();
+    }
+
+    public static TestCodeModel createCodeModelWithEmptyElse() throws CodeGenerationException {
+        return new TestCodeModelBuilder()
+            .startPath("enableUI")
+                .callIf("enableUI")
+                    .beginThen()
+                        .callDelegate("operation")
+                        .end()
+                .callDelegate("finalOperation")
+            .build();
+    }
+
+    public static TestCodeModel createCodeModelWithEmptyIfAndElse() throws CodeGenerationException {
+        return new TestCodeModelBuilder()
+            .startPath("enableUI")
+                .callBooleanDelegate("enableUI")
+                .callDelegate("finalOperation")
             .build();
     }
 }

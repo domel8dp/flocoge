@@ -29,6 +29,21 @@ public class CodeGeneratorTest {
         generateAndValidate(createTransformedAdditionalModel(), createAdditionalCodeModel());
     }
 
+    @Test
+    public void testGenerationWithEmptyIf() throws CodeGenerationException {
+        generateAndValidate(createTransformedModelWithEmptyIf(), createCodeModelWithEmptyIf());
+    }
+
+    @Test
+    public void testGenerationWithEmptyElse() throws CodeGenerationException {
+        generateAndValidate(createTransformedModelWithEmptyElse(), createCodeModelWithEmptyElse());
+    }
+
+    @Test
+    public void testGenerationWithEmptyIfAndElse() throws CodeGenerationException {
+        generateAndValidate(createTransformedModelWithEmptyIfAndElse(), createCodeModelWithEmptyIfAndElse());
+    }
+
     private void generateAndValidate(FlocogeModel model, TestCodeModel expectedCodeModel)
             throws CodeGenerationException {
         TestCodeModel codeModel = new TestCodeModel();

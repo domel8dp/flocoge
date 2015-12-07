@@ -39,6 +39,14 @@ public class TestCodeBlock implements CodeBlock {
     }
 
     @Override
+    public CodeIf _ifNot(String name) {
+        calls.add(new Call(name, Call.Type.IF_NOT));
+        TestCodeIf _if = new TestCodeIf();
+        ifs.put(name, _if);
+        return _if;
+    }
+
+    @Override
     public CodeSwitch _switch(String name) {
         calls.add(new Call(name, Call.Type.SWITCH));
         TestCodeSwitch _switch = new TestCodeSwitch();

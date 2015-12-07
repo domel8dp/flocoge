@@ -63,6 +63,18 @@ public class TestCodeModelBuilder {
         return this;
     }
 
+    public TestCodeModelBuilder callIfNot(String name) {
+        model.addBooleanMethod(name);
+        branchStack.getLast()._ifNot(name);
+        return this;
+    }
+
+    public TestCodeModelBuilder callBooleanDelegate(String name) {
+        model.addBooleanMethod(name);
+        branchStack.getLast().callDelegate(name);
+        return this;
+    }
+
     public TestCodeModelBuilder callReturn() {
         branchStack.getLast()._return();
         return this;

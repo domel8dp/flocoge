@@ -14,6 +14,7 @@ import com.sun.codemodel.JExpr;
 import com.sun.codemodel.JFieldVar;
 import com.sun.codemodel.JMethod;
 import com.sun.codemodel.JMod;
+import com.sun.codemodel.JOp;
 import com.sun.codemodel.JSwitch;
 import com.sun.codemodel.JVar;
 
@@ -150,7 +151,12 @@ class DefaultCodeModel implements CodeModel {
 
         @Override
         public CodeIf _if(String name) {
-            return new DefaultCodeIf(block, name);
+            return new DefaultCodeIf(block, name, true);
+        }
+
+        @Override
+        public CodeIf _ifNot(String name) {
+            return new DefaultCodeIf(block, name, false);
         }
 
         @Override
@@ -173,8 +179,12 @@ class DefaultCodeModel implements CodeModel {
 
         private final JConditional if1;
 
-        public DefaultCodeIf(JBlock block, String name) {
-            this.if1 = block._if(JExpr.invoke(delegate, name));
+        public DefaultCodeIf(JBlock block, String name, boolean positive) {
+            if (positive) {
+                if1 = block._if(JExpr.invoke(delegate, name));
+            } else {
+                if1 = block._if(JOp.not(JExpr.invoke(delegate, name)));
+            }
         }
 
         @Override

@@ -40,7 +40,7 @@ public class TestCodeModelsMatchingValidator {
         if (expectedCodeBlock != null && actualCodeBlock != null) {
             assertEquals(expectedCodeBlock.calls, actualCodeBlock.calls);
             for (Call call : expectedCodeBlock.calls) {
-                if (call.type == Call.Type.IF) {
+                if (call.type == Call.Type.IF || call.type == Call.Type.IF_NOT) {
                     TestCodeIf expectedIf = expectedCodeBlock.ifs.get(call.name);
                     TestCodeIf actualIf = actualCodeBlock.ifs.get(call.name);
                     validateCodeIfs(expectedIf, actualIf);

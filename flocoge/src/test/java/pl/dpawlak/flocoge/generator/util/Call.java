@@ -4,7 +4,7 @@ import java.util.Objects;
 
 public class Call {
 
-    public enum Type { LOCAL, DELEGATE, IF, SWITCH, EXTERNAL, RETURN, BREAK }
+    public enum Type { LOCAL, DELEGATE, IF, IF_NOT, SWITCH, EXTERNAL, RETURN, BREAK }
 
     public final String name;
     public final Type type;

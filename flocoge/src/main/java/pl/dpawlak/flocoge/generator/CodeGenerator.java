@@ -121,13 +121,39 @@ public class CodeGenerator {
             delegateMethods.add(element.label);
         }
         DecisionMeta meta = model.decisions.get(element.id);
-        CodeIf if1 = body._if(element.label);
-        ModelElement finalElement = traverseBooleanBranch(if1._then(), 0, element, meta, currentMergePoint);
-        ModelElement branchFinalElement = traverseBooleanBranch(if1._else(), 1, element, meta, currentMergePoint);
+        boolean emptyIf = isEmptyBranch(element, meta, 0, currentMergePoint);
+        boolean emptyElse = isEmptyBranch(element, meta, 1, currentMergePoint);
+        ModelElement finalElement = null;
+        ModelElement branchFinalElement = null;
+        if (!emptyIf && !emptyElse) {
+            CodeIf if1 = body._if(element.label);
+            finalElement = traverseBooleanBranch(if1._then(), 0, element, meta, currentMergePoint);
+            branchFinalElement = traverseBooleanBranch(if1._else(), 1, element, meta, currentMergePoint);
+        } else if (emptyIf && !emptyElse) {
+            CodeIf if1 = body._ifNot(element.label);
+            finalElement = element.connections.get(0).target;
+            branchFinalElement = traverseBooleanBranch(if1._then(), 1, element, meta, currentMergePoint);
+        } else if (!emptyIf && emptyElse) {
+            CodeIf if1 = body._if(element.label);
+            finalElement = traverseBooleanBranch(if1._then(), 0, element, meta, currentMergePoint);
+            branchFinalElement = element.connections.get(1).target;
+        } else {
+            body.callDelegate(element.label);
+            finalElement = element.connections.get(0).target;
+            branchFinalElement = element.connections.get(1).target;
+        }
         if (branchFinalElement != null && finalElement == null) {
             finalElement = branchFinalElement;
         }
         return finalElement;
+    }
+
+    private boolean isEmptyBranch(ModelElement element, DecisionMeta meta, int branchIndex, String currentMergePoint) {
+        ModelElement nextElement = element.connections.get(branchIndex).target;
+        String branchMergePoint = meta.mergePoints[branchIndex];
+        String mergePoint = branchMergePoint != null ? branchMergePoint : currentMergePoint;
+        return (nextElement == null && mergePoint == null) ||
+            (nextElement != null && nextElement.id.equals(mergePoint));
     }
 
     private ModelElement traverseBooleanBranch(CodeBlock block, int branchIndex, ModelElement element,
