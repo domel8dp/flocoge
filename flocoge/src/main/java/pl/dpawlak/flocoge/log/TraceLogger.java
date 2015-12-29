@@ -2,8 +2,8 @@ package pl.dpawlak.flocoge.log;
 
 public class TraceLogger extends VerboseLogger {
 
-    public TraceLogger(ModelPrinter modelPrinter) {
-        super(true, modelPrinter);
+    public TraceLogger(ModelPrinter bareModelPrinter, ModelPrinter modelPrinter) {
+        super(true, bareModelPrinter, modelPrinter);
     }
 
     @Override

@@ -7,7 +7,7 @@ public class ErrorCollectingLogger extends ErrorLogger {
     private String error;
 
     public ErrorCollectingLogger() {
-        super(false, null);
+        super(false, null, null);
     }
 
     @Override

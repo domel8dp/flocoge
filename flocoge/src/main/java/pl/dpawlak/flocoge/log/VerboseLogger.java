@@ -2,8 +2,8 @@ package pl.dpawlak.flocoge.log;
 
 public class VerboseLogger extends ErrorLogger {
 
-    public VerboseLogger(boolean printStack, ModelPrinter modelPrinter) {
-        super(printStack, modelPrinter);
+    public VerboseLogger(boolean printStack, ModelPrinter bareModelPrinter, ModelPrinter modelPrinter) {
+        super(printStack, bareModelPrinter, modelPrinter);
     }
 
     @Override

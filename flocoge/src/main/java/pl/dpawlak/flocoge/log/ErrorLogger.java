@@ -5,10 +5,12 @@ import pl.dpawlak.flocoge.model.FlocogeModel;
 public class ErrorLogger implements Logger {
 
     private final boolean printStack;
+    private final ModelPrinter bareModelPrinter;
     private final ModelPrinter modelPrinter;
     
-    public ErrorLogger(boolean printStack, ModelPrinter modelPrinter) {
+    public ErrorLogger(boolean printStack, ModelPrinter bareModelPrinter, ModelPrinter modelPrinter) {
         this.printStack = printStack;
+        this.bareModelPrinter = bareModelPrinter;
         this.modelPrinter = modelPrinter;
     }
 
@@ -25,6 +27,12 @@ public class ErrorLogger implements Logger {
             if (last instanceof Throwable) {
                 ((Throwable)last).printStackTrace();
             }
+        }
+    }
+
+    public void printBareModel(FlocogeModel model) {
+        if (bareModelPrinter != null) {
+            bareModelPrinter.print(model);
         }
     }
 

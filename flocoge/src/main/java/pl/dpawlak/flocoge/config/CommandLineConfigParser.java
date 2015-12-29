@@ -18,6 +18,7 @@ public class CommandLineConfigParser {
     private Configuration configuration;
     private boolean stacktrace;
     private boolean verbose;
+    private boolean printBareModel;
     private boolean printModel;
     private boolean trace;
 
@@ -39,7 +40,7 @@ public class CommandLineConfigParser {
             }
             if (result) {
                 configuration = new Configuration(diagramPath, srcFolder, diagramName, packageName, stacktrace, verbose,
-                    printModel, trace);
+                    printBareModel, printModel, trace);
             }
             return result;
         } else {
@@ -81,6 +82,8 @@ public class CommandLineConfigParser {
                 stacktrace = true;
             } else if ("--verbose".equals(arg) || "-v".equals(arg)) {
                 verbose = true;
+            } else if ("--print-bare".equals(arg) || "-b".equals(arg)) {
+                printBareModel = true;
             } else if ("--print-model".equals(arg) || "-p".equals(arg)) {
                 printModel = true;
             } else if ("--trace".equals(arg) || "-t".equals(arg)) {
@@ -161,9 +164,12 @@ public class CommandLineConfigParser {
         log.log("Flags:");
         log.log("--help -h : print this help message");
         log.log("--verbose -v : print some information about execution");
-        log.log("--print-model -p : print generated model, may be useful for troubleshooting");
+        log.log("");
+        log.log("Troubleshooting flags:");
+        log.log("--print-bare -b : print bare model before validation and transformation");
+        log.log("--print-model -p : print model after validation and transformation");
         log.log("--stacktrace -s : print full stacktrace for exception");
         log.log("--trace -t : print every step, implies --verbose and --stacktrace flags");
-        log.log("");
+        log.log("-------");
     }
 }

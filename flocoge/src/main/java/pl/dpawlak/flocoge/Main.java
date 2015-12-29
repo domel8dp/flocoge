@@ -22,12 +22,13 @@ public class Main {
         CommandLineConfigParser parser = new CommandLineConfigParser(startupLogger);
         if (parser.parse(args)) {
             Configuration config = parser.getConfiguration();
-            Logger log = Logger.Factory.create(config);
+            Logger log = Logger.Factory.createStdOutLogger(config);
             try {
                 FlocogeModel model = new FlocogeModel();
                 ModelLoader modelLoader = new ModelLoader(XMLInputFactory.newInstance());
                 DiagramLoader diagramLoader = new DiagramLoader(config, modelLoader, log);
                 diagramLoader.loadDiagram(model);
+                log.printBareModel(model);
                 ModelInspector inspector = new ModelInspector(log);
                 if (inspector.inspect(model)) {
                     log.printModel(model);

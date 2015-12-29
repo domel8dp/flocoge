@@ -54,7 +54,7 @@ public class DiagramLoaderTest {
     }
 
     private Configuration prepareConfig(File diagramFile) {
-        return new Configuration(diagramFile, null, null, null, false, false, false, false);
+        return new Configuration(diagramFile, null, null, null, false, false, false, false, false);
     }
 
     private static class StartElementMatcher extends ArgumentMatcher<StartElement> {
