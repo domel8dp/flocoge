@@ -9,13 +9,11 @@ import pl.dpawlak.flocoge.model.ModelElement.Shape;
 
 public class ModelElementParser {
 
-    public enum ElementType {ELEMENT, CONNECTION, LABEL, UNKNOWN}
+    public enum ElementType { ELEMENT, CONNECTION, LABEL, UNKNOWN }
 
     private ModelElement modelElement;
     private Connection connection;
     private Label label;
-
-    public ModelElementParser() { }
 
     public ElementType parseNextElement(StartElement element) throws DiagramLoadingException {
         clearInternalState();

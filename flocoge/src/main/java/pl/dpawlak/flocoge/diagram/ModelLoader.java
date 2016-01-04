@@ -15,6 +15,7 @@ import javax.xml.stream.events.XMLEvent;
 
 import pl.dpawlak.flocoge.diagram.ModelElementParser.Connection;
 import pl.dpawlak.flocoge.diagram.ModelElementParser.Label;
+import pl.dpawlak.flocoge.log.Logger;
 import pl.dpawlak.flocoge.model.FlocogeModel;
 import pl.dpawlak.flocoge.model.ModelConnection;
 import pl.dpawlak.flocoge.model.ModelElement;
@@ -22,14 +23,16 @@ import pl.dpawlak.flocoge.model.ModelElement;
 public class ModelLoader {
 
     private final XMLInputFactory factory;
+    private final Logger log;
     private final ModelElementParser parser;
     private final List<Label> labels;
     private final Map<String, Connection> connections;
 
     private FlocogeModel model;
 
-    public ModelLoader(XMLInputFactory factory) {
+    public ModelLoader(XMLInputFactory factory, Logger log) {
         this.factory = factory;
+        this.log = log;
         parser = new ModelElementParser();
         labels = new LinkedList<>();
         connections = new LinkedHashMap<>();
@@ -37,13 +40,54 @@ public class ModelLoader {
 
     public void loadModel(FlocogeModel model, XMLEventReader reader, StartElement rootElement)
             throws DiagramLoadingException {
+        log.log("Loading model from diagram...");
+        log.trace("==================");
         this.model = model;
         parseElements(reader, rootElement);
+        log.trace("==================");
         assignLabelsToConnections();
         connectElements();
     }
 
+    private void parseElements(XMLEventReader reader, StartElement rootElement) throws DiagramLoadingException {
+        try {
+            XMLEventReader filteredReader = factory.createFilteredReader(reader, new MxCellElementFilter());
+            while (filteredReader.hasNext()) {
+                parseElement(filteredReader.nextEvent().asStartElement());
+            }
+        } catch (XMLStreamException ex) {
+            throw new DiagramLoadingException(ex);
+        }
+    }
+
+    private void parseElement(StartElement element) throws DiagramLoadingException {
+        log.trace("Parsing: {} ...", element);
+        switch (parser.parseNextElement(element)) {
+            case ELEMENT:
+                ModelElement modelElement = parser.getModelElement();
+                log.trace("Parsed {}(label: '{}', id: {})", modelElement.shape.name(), modelElement.label,
+                    modelElement.id);
+                model.elements.put(modelElement.id, modelElement);
+                break;
+            case CONNECTION:
+                Connection connection = parser.getConnection();
+                log.trace("Parsed connection(label: '{}', source id: {}, target id: {})", connection.label,
+                    connection.sourceId, connection.targetId);
+                connections.put(connection.id, connection);
+                break;
+            case LABEL:
+                Label label = parser.getLabel();
+                log.trace("Parsed label(value: '{}', parent id: {})", label.value, label.parentId);
+                labels.add(label);
+                break;
+            default:
+                log.trace("Element type unknown");
+                break;
+        }
+    }
+
     private void assignLabelsToConnections() {
+        log.trace("Assigning labels to connections...");
         for (Label label : labels) {
             Connection connection = connections.get(label.parentId);
             if (connection != null) {
@@ -54,6 +98,7 @@ public class ModelLoader {
     }
 
     private void connectElements() {
+        log.trace("Connecting elements...");
         Map<String, ModelElement> startElements = new LinkedHashMap<>(model.elements);
         for (Connection connection : connections.values()) {
             ModelElement sourceElement = model.elements.get(connection.sourceId);
@@ -72,35 +117,6 @@ public class ModelLoader {
         }
         connections.clear();
         model.startElements.putAll(startElements);
-    }
-
-    private void parseElements(XMLEventReader reader, StartElement rootElement) throws DiagramLoadingException {
-        try {
-            XMLEventReader filteredReader = factory.createFilteredReader(reader, new MxCellElementFilter());
-            while (filteredReader.hasNext()) {
-                parseElement(filteredReader.nextEvent().asStartElement());
-            }
-        } catch (XMLStreamException ex) {
-            throw new DiagramLoadingException(ex);
-        }
-    }
-
-    private void parseElement(StartElement element) throws DiagramLoadingException {
-        switch (parser.parseNextElement(element)) {
-            case ELEMENT:
-                ModelElement modelElement = parser.getModelElement();
-                model.elements.put(modelElement.id, modelElement);
-                break;
-            case CONNECTION:
-                Connection connection = parser.getConnection();
-                connections.put(connection.id, connection);
-                break;
-            case LABEL:
-                labels.add(parser.getLabel());
-                break;
-            default:
-                break;
-        }
     }
 
     public XMLInputFactory getFactory() {

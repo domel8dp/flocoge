@@ -25,7 +25,7 @@ public class Main {
             Logger log = Logger.Factory.createStdOutLogger(config);
             try {
                 FlocogeModel model = new FlocogeModel();
-                ModelLoader modelLoader = new ModelLoader(XMLInputFactory.newInstance());
+                ModelLoader modelLoader = new ModelLoader(XMLInputFactory.newInstance(), log);
                 DiagramLoader diagramLoader = new DiagramLoader(config, modelLoader, log);
                 diagramLoader.loadDiagram(model);
                 log.printBareModel(model);
@@ -34,6 +34,7 @@ public class Main {
                     log.printModel(model);
                     CodeGenerator generator = new CodeGenerator(config, log);
                     generator.generate(model);
+                    log.log("Done.");
                 } else {
                     System.exit(1);
                 }

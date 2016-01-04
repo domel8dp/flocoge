@@ -42,20 +42,19 @@ public class DiagramLoader {
 
     public void loadDiagram(FlocogeModel model) throws DiagramLoadingException {
         try (FileInputStream inputStream = new FileInputStream(config.diagramPath)) {
-            log.log("Loading diagram from file: {}", config.diagramPath.getCanonicalPath());
+            log.log("Loading diagram from file: {} ...", config.diagramPath.getCanonicalPath());
             reader = factory.createXMLEventReader(inputStream);
             if (reader.hasNext()) {
                 startElement = reader.nextTag().asStartElement();
                 String rootName = startElement.getName().getLocalPart();
                 if ("mxfile".equals(rootName)) {
+                    log.trace("Loading encrypted diagram...");
                     Characters encryptedContentElement = findDiagramElement();
                     reader.close();
                     String diagramData = decryptDiagram(encryptedContentElement.getData());
                     prepareXmlReader(diagramData);
-                    log.log("Loading model from diagram");
                     loader.loadModel(model, reader, startElement);
                 } else if ("mxGraphModel".equals(rootName)) {
-                    log.log("Loading model from diagram");
                     loader.loadModel(model, reader, startElement);
                 } else {
                     throw new DiagramLoadingException("Diagram loading error (invalid root element)");
@@ -73,6 +72,7 @@ public class DiagramLoader {
     }
 
     private Characters findDiagramElement() throws DiagramLoadingException {
+        log.trace("Searching for diagram element...");
         try {
             XMLEventReader filteredReader = factory.createFilteredReader(reader, new DiagramElementFilter());
             if (filteredReader.hasNext() && filteredReader.nextEvent() != null && reader.hasNext()) {
@@ -91,6 +91,7 @@ public class DiagramLoader {
     }
 
     private String decryptDiagram(String content) throws DiagramLoadingException {
+        log.trace("Decrypting diagram...");
         byte[] data = decryptBase64(content);
         String inflatedData = inflateData(data);
         return decodeUrlString(inflatedData);

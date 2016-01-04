@@ -25,8 +25,14 @@ public class ElementInspectorImpl implements ElementInspector {
     public void skipElements() {
         ModelElement nextElement = context.getElement();
         while (context.isValid() && nextElement != null && nextElement.shape == Shape.SKIP) {
+            log.trace("  Skipping {}(label: '{}', id: {}) ...", nextElement.shape.name(), nextElement.label,
+                nextElement.id);
             context.removeElement(nextElement.id);
             nextElement = getNextElement(nextElement);
+        }
+        if (nextElement != null && context.getElement() != null && !nextElement.id.equals(context.getElement().id)) {
+            log.trace("Inspecting {}(label: '{}', id: {}) ...", nextElement.shape.name(), nextElement.label,
+                nextElement.id);
         }
         context.replaceElement(nextElement);
     }
@@ -48,9 +54,12 @@ public class ElementInspectorImpl implements ElementInspector {
 
     @Override
     public void validateBranches() {
+        log.trace("  Validating branches...");
         Iterator<Map.Entry<String, Integer>> branchesIterator = context.getCurrentBranchesIterator();
         while (context.isValid() && branchesIterator.hasNext()) {
             Map.Entry<String, Integer> branch = branchesIterator.next();
+            log.trace("  Inspecting merge point for decision id: {}, branch index: {} ...", branch.getKey(),
+                branch.getValue());
             MergePointsImpl impl = new MergePointsImpl(log, context, branch.getKey(), branch.getValue());
             new MergePointsFacade(impl).inspectNode();
         }
@@ -63,6 +72,7 @@ public class ElementInspectorImpl implements ElementInspector {
 
     @Override
     public void validateAndTransformElementLabel() {
+        log.trace("  Inspecting element label...");
         ModelElement element = context.getElement();
         if (element.shape == Shape.START && (element.label == null || element.label.trim().length() == 0)) {
             return;
@@ -79,6 +89,7 @@ public class ElementInspectorImpl implements ElementInspector {
 
     @Override
     public void validateConnections() {
+        log.trace("  Validating connections...");
         ModelElement element = context.getElement();
         if (element.shape == Shape.DECISION) {
             if (element.connections.size() <= 1) {
@@ -93,6 +104,7 @@ public class ElementInspectorImpl implements ElementInspector {
 
     @Override
     public void validateAndTransformConnectionsLabels() {
+        log.trace("  Inspecting connection labels...");
         ModelElement element = context.getElement();
         if (element.shape == Shape.DECISION) {
             Set<String> branchLabels = new HashSet<>();

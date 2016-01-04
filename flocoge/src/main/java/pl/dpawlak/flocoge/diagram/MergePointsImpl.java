@@ -103,6 +103,7 @@ public class MergePointsImpl implements MergePoints {
 
     @Override
     public void saveMergePointForBranch() {
+        log.trace("  Saving merge point for branch: {}...", branchIndex);
         decision.mergePoints[branchIndex] = context.getId();
     }
 
@@ -114,6 +115,7 @@ public class MergePointsImpl implements MergePoints {
     @Override
     public void saveMergePointOnBothBranches() {
         int otherBranchIndex = branches.get(decisionId).get(0);
+        log.trace("  Saving merge point for branches: {}, {} ...", otherBranchIndex, branchIndex);
         decision.mergePoints[branchIndex] = decision.mergePoints[otherBranchIndex] = context.getId();
     }
 

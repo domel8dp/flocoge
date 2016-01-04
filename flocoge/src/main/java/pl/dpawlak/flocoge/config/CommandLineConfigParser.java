@@ -155,9 +155,11 @@ public class CommandLineConfigParser {
     }
 
     private void printHelp() {
+        log.log("");
         log.log("-------");
         log.log("Draw.io Flowchart Code Generator");
         log.log("-------");
+        log.log("");
         log.log("Usage:");
         log.log("[flags] <diagram path> <output folder> <package name>");
         log.log("");
@@ -170,6 +172,6 @@ public class CommandLineConfigParser {
         log.log("--print-model -p : print model after validation and transformation");
         log.log("--stacktrace -s : print full stacktrace for exception");
         log.log("--trace -t : print every step, implies --verbose and --stacktrace flags");
-        log.log("-------");
+        log.log("");
     }
 }

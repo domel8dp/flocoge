@@ -33,10 +33,13 @@ public class CodeGenerator {
     }
 
     public void generate(FlocogeModel model) throws CodeGenerationException {
+        log.log("Generating code...");
+        log.trace("==================");
         this.model = model;
-        log.log("Generating code");
         codeModel.init(config.packageName, config.baseName, model.areExternalCallsPresent());
         fillEntities();
+        log.trace("==================");
+        log.trace("Saving files...");
         codeModel.build(config.srcFolder);
     }
 
@@ -46,12 +49,15 @@ public class CodeGenerator {
             ModelElement element = path.getValue();
             switch (element.shape) {
                 case ON_PAGE_REF:
+                    log.trace("Start private path: {}", methodName);
                     traverseBranch(codeModel.privateMethod(methodName), getNext(element), null);
                     break;
                 case OFF_PAGE_REF:
+                    log.trace("Start public path: {}", methodName);
                     traverseBranch(codeModel.publicExternalMethod(methodName), getNext(element), null);
                     break;
                 default:
+                    log.trace("Start public path: {}", methodName);
                     traverseBranch(codeModel.publicMethod(methodName), element, null);
                     break;
             }
@@ -61,18 +67,14 @@ public class CodeGenerator {
     private ModelElement traverseBranch(CodeBlock body, ModelElement startElement, String mergePoint)
             throws CodeGenerationException {
         ModelElement element = startElement;
-        log.trace("Start traversing branch, merge point: {}", mergePoint);
+        log.trace("Start branch, merge point: {}", mergePoint);
         while (element != null && (mergePoint == null || !element.id.equals(mergePoint))) {
-            log.trace("Generating element id: {}, label: {}, shape: {}", element.id, element.label, element.shape);
+            log.trace("Generating {}(label: '{}', id: {}) ...", element.shape, element.label, element.id);
             if (element.shape == Shape.DECISION) {
                 if (isBooleanDecision(element)) {
                     element = generateDelegateBooleanCall(body, element, mergePoint);
                 } else {
                     element = generateDelegateEnumCall(body, element, mergePoint);
-                }
-                if (element != null) {
-                    log.trace("After decision element id: {}, label: {}, shape: {}", element.id, element.label,
-                        element.shape);
                 }
             } else {
                 switch (element.shape) {
