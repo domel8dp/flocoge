@@ -11,29 +11,33 @@ public final class ConfigurationUtils {
     private ConfigurationUtils() { }
 
     public static boolean diagramExists(File diagramPath) {
-        return diagramPath.exists() && diagramPath.isFile();
+        return diagramPath != null && diagramPath.exists() && diagramPath.isFile();
     }
 
     public static boolean srcFolderExists(File srcFolder) {
-        return srcFolder.exists() && srcFolder.isDirectory();
+        return srcFolder != null && srcFolder.exists() && srcFolder.isDirectory();
     }
 
     public static boolean createIfMissing(File srcFolder) {
-        return !srcFolder.exists() && srcFolder.mkdirs();
+        return srcFolder != null && !srcFolder.exists() && srcFolder.mkdirs();
     }
 
     public static boolean packageNameValid(String name) {
-        boolean result = name.matches("[a-zA-Z_$][a-zA-Z_$0-9]*(\\.[a-zA-Z_$][a-zA-Z_$0-9]*)*");
-        if (result) {
-            for (String part : name.split("\\.")) {
-                result &= !ModelNamesUtils.isReservedWord(part);
+        if (name != null) {
+            boolean result = name.matches("[a-zA-Z_$][a-zA-Z_$0-9]*(\\.[a-zA-Z_$][a-zA-Z_$0-9]*)*");
+            if (result) {
+                for (String part : name.split("\\.")) {
+                    result &= !ModelNamesUtils.isReservedWord(part);
+                }
             }
+            return result;
+        } else {
+            return false;
         }
-        return result;
     }
 
     public static boolean diagramNameValid(String name) {
-        return name.matches("[^a-zA-Z]*[a-zA-Z].*");
+        return name != null && name.matches("[^a-zA-Z]*[a-zA-Z].*");
     }
 
     public static boolean diagramNameValid(File diagramPath) {
@@ -42,12 +46,12 @@ public final class ConfigurationUtils {
 
     public static void check(Configuration config) throws InvalidConfigurationException {
         if (!diagramExists(config.diagramPath)) {
-            throw new InvalidConfigurationException("Diagram file does not exist (" + config.diagramPath.getPath() +
+            throw new InvalidConfigurationException("Diagram file does not exist (" + config.diagramPath +
                 ")");
         }
         if (!config.dry && !srcFolderExists(config.srcFolder) && !createIfMissing(config.srcFolder)) {
             throw new InvalidConfigurationException("Sources folder is not available and could not be created (" +
-                config.srcFolder.getPath() + ")");
+                config.srcFolder + ")");
         }
         if (!packageNameValid(config.packageName)) {
             throw new InvalidConfigurationException("Invalid package name (" + config.packageName + ")");
@@ -67,7 +71,7 @@ public final class ConfigurationUtils {
             }
         } else if (!diagramNameValid(diagramPath)) {
             throw new InvalidConfigurationException("Diagram file name can not be used as a Java class name (" +
-                diagramPath.getName() + ")");
+                diagramPath + ")");
         }
     }
 
@@ -97,8 +101,12 @@ public final class ConfigurationUtils {
     }
 
     private static String getRawDiagramName(File diagramPath) {
-        String fileName = diagramPath.getName();
-        int lastDotPosition = fileName.lastIndexOf('.');
-        return lastDotPosition > 0 ? fileName.substring(0, lastDotPosition) : fileName;
+        if (diagramPath != null) {
+            String fileName = diagramPath.getName();
+            int lastDotPosition = fileName.lastIndexOf('.');
+            return lastDotPosition > 0 ? fileName.substring(0, lastDotPosition) : fileName;
+        } else {
+            return null;
+        }
     }
 }

@@ -57,12 +57,12 @@ public class Flocoge {
         }
     }
 
-    Flocoge(Logger log, Configuration config, FlocogeModel model, ModelLoader modelLoader, DiagramLoader diagramLoader,
-            ModelInspector inspector, CodeGenerator generator) {
+    Flocoge(Logger log, Configuration config, FlocogeModel model, DiagramLoader diagramLoader, ModelInspector inspector,
+            CodeGenerator generator) {
         this.log = log;
         this.config = config;
         this.model = model;
-        this.modelLoader = modelLoader;
+        this.modelLoader = null;
         this.diagramLoader = diagramLoader;
         this.inspector = inspector;
         this.generator = generator;
