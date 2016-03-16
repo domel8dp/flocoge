@@ -18,6 +18,8 @@ import com.sun.codemodel.JOp;
 import com.sun.codemodel.JSwitch;
 import com.sun.codemodel.JVar;
 
+import pl.dpawlak.flocoge.config.Configuration;
+import pl.dpawlak.flocoge.config.ConfigurationUtils;
 import pl.dpawlak.flocoge.diagram.ModelNamesUtils;
 
 class DefaultCodeModel implements CodeModel {
@@ -36,9 +38,9 @@ class DefaultCodeModel implements CodeModel {
     }
 
     @Override
-    public void init(String packageName, String baseName, boolean externalCallsPresent) throws CodeGenerationException {
-        this.baseName = baseName;
-        prepareEmptyEntities(packageName, externalCallsPresent);
+    public void init(Configuration configuration, boolean externalCallsPresent) throws CodeGenerationException {
+        baseName = ConfigurationUtils.getDiagramName(configuration);
+        prepareEmptyEntities(configuration.packageName, externalCallsPresent);
     }
 
     private void prepareEmptyEntities(String packageName, boolean externalCallsPresent) throws CodeGenerationException {

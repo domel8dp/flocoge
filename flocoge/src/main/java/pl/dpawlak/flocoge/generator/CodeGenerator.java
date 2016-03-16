@@ -36,11 +36,13 @@ public class CodeGenerator {
         log.log("Generating code...");
         log.trace("==================");
         this.model = model;
-        codeModel.init(config.packageName, config.baseName, model.areExternalCallsPresent());
+        codeModel.init(config, model.areExternalCallsPresent());
         fillEntities();
         log.trace("==================");
-        log.trace("Saving files...");
-        codeModel.build(config.srcFolder);
+        if (!config.dry) {
+            log.trace("Saving files...");
+            codeModel.build(config.srcFolder);
+        }
     }
 
     private void fillEntities() throws CodeGenerationException {

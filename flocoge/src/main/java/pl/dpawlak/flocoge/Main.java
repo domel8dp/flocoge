@@ -2,18 +2,9 @@ package pl.dpawlak.flocoge;
 
 import java.lang.Thread.UncaughtExceptionHandler;
 
-import javax.xml.stream.XMLInputFactory;
-
 import pl.dpawlak.flocoge.config.CommandLineConfigParser;
 import pl.dpawlak.flocoge.config.Configuration;
-import pl.dpawlak.flocoge.diagram.DiagramLoader;
-import pl.dpawlak.flocoge.diagram.DiagramLoadingException;
-import pl.dpawlak.flocoge.diagram.ModelInspector;
-import pl.dpawlak.flocoge.diagram.ModelLoader;
-import pl.dpawlak.flocoge.generator.CodeGenerationException;
-import pl.dpawlak.flocoge.generator.CodeGenerator;
 import pl.dpawlak.flocoge.log.Logger;
-import pl.dpawlak.flocoge.model.FlocogeModel;
 
 public class Main {
 
@@ -24,25 +15,9 @@ public class Main {
             Configuration config = parser.getConfiguration();
             Logger log = Logger.Factory.createStdOutLogger(config);
             try {
-                FlocogeModel model = new FlocogeModel();
-                ModelLoader modelLoader = new ModelLoader(XMLInputFactory.newInstance(), log);
-                DiagramLoader diagramLoader = new DiagramLoader(config, modelLoader, log);
-                diagramLoader.loadDiagram(model);
-                log.printBareModel(model);
-                ModelInspector inspector = new ModelInspector(log);
-                if (inspector.inspect(model)) {
-                    log.printModel(model);
-                    CodeGenerator generator = new CodeGenerator(config, log);
-                    generator.generate(model);
-                    log.log("Done.");
-                } else {
-                    System.exit(1);
-                }
-            } catch (DiagramLoadingException loadingEx) {
-                log.error("Diagram loading failed ({})", loadingEx.getMessage(), loadingEx);
-                System.exit(1);
-            } catch (CodeGenerationException generationEx) {
-                log.error("Code generation failed ({})", generationEx.getMessage(), generationEx);
+                new Flocoge(config, log).generate();
+                log.log("Done.");
+            } catch (FlocogeException ex) {
                 System.exit(1);
             }
         } else {

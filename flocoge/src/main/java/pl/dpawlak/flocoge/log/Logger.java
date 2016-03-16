@@ -21,7 +21,7 @@ public interface Logger {
 
     void printModel(FlocogeModel model);
 
-    public static class Factory {
+    class Factory {
 
         public static Logger createStartupLogger() {
             return new VerboseLogger(true, null, null);
@@ -40,7 +40,7 @@ public interface Logger {
         }
     }
 
-    public static class Formatter {
+    class Formatter {
 
         public static String buildMsg(String msg, Object... objects) {
             String[] parts = msg.split("\\{\\}", objects.length + 1);

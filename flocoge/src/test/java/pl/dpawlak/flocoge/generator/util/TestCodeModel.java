@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import pl.dpawlak.flocoge.config.Configuration;
 import pl.dpawlak.flocoge.generator.CodeBlock;
 import pl.dpawlak.flocoge.generator.CodeGenerationException;
 import pl.dpawlak.flocoge.generator.CodeModel;
@@ -24,7 +25,7 @@ public class TestCodeModel implements CodeModel {
     public final Set<String> externalMethods = new HashSet<>();
 
     @Override
-    public void init(String packageName, String baseName, boolean externalCallsPresent) throws CodeGenerationException {
+    public void init(Configuration config, boolean externalCallsPresent) throws CodeGenerationException {
         this.externalCallsPresent = externalCallsPresent;
     }
 

@@ -3,9 +3,11 @@ package pl.dpawlak.flocoge.generator;
 import java.io.File;
 import java.util.List;
 
+import pl.dpawlak.flocoge.config.Configuration;
+
 public interface CodeModel {
 
-    void init(String packageName, String baseName, boolean externalCallsPresent) throws CodeGenerationException;
+    void init(Configuration configuration, boolean externalCallsPresent) throws CodeGenerationException;
     CodeBlock publicMethod(String name);
     CodeBlock privateMethod(String name);
     CodeBlock publicExternalMethod(String name);

@@ -12,6 +12,7 @@ import org.junit.Test;
 import org.mockito.ArgumentMatcher;
 
 import pl.dpawlak.flocoge.config.Configuration;
+import pl.dpawlak.flocoge.config.ConfigurationBuilder;
 import pl.dpawlak.flocoge.log.Logger;
 import pl.dpawlak.flocoge.model.FlocogeModel;
 
@@ -54,7 +55,7 @@ public class DiagramLoaderTest {
     }
 
     private Configuration prepareConfig(File diagramFile) {
-        return new Configuration(diagramFile, null, null, null, false, false, false, false, false);
+        return new ConfigurationBuilder().withDiagramPath(diagramFile).build();
     }
 
     private static class StartElementMatcher extends ArgumentMatcher<StartElement> {
