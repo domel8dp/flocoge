@@ -1,25 +1,23 @@
 package pl.dpawlak.flocoge.diagram;
 
-import static org.mockito.Mockito.*;
-
-import java.io.File;
-
-import javax.xml.stream.XMLEventReader;
-import javax.xml.stream.XMLInputFactory;
-import javax.xml.stream.events.StartElement;
-
 import org.junit.Test;
 import org.mockito.ArgumentMatcher;
-
 import pl.dpawlak.flocoge.config.Configuration;
 import pl.dpawlak.flocoge.config.ConfigurationBuilder;
 import pl.dpawlak.flocoge.log.Logger;
 import pl.dpawlak.flocoge.model.FlocogeModel;
 
+import javax.xml.stream.XMLEventReader;
+import javax.xml.stream.XMLInputFactory;
+import javax.xml.stream.events.StartElement;
+import java.io.File;
+
+import static org.mockito.Mockito.*;
+
 public class DiagramLoaderTest {
 
-    private static final File ENCRYPTED_DIAGRAM = new File("src/test/resources/TestDiagramCompressed.xml");
-    private static final File PLAIN_DIAGRAM = new File("src/test/resources/TestDiagramPlain");
+    private static final File ENCRYPTED_DIAGRAM = new File("src/diagramTest/resources/TestDiagramCompressed.xml");
+    private static final File PLAIN_DIAGRAM = new File("src/diagramTest/resources/TestDiagramPlain");
     private static final File INVALID_FILE = new File("build.gradle");
 
     @Test

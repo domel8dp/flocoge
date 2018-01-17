@@ -1,25 +1,23 @@
 package pl.dpawlak.flocoge.diagram;
 
-import static org.mockito.Mockito.mock;
-
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
+import org.junit.Test;
+import pl.dpawlak.flocoge.log.Logger;
+import pl.dpawlak.flocoge.model.FlocogeModel;
+import pl.dpawlak.flocoge.model.TestModels;
+import pl.dpawlak.flocoge.model.util.ModelsMatchingValidator;
 
 import javax.xml.stream.XMLEventReader;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 
-import org.junit.Test;
-
-import pl.dpawlak.flocoge.model.TestModels;
-import pl.dpawlak.flocoge.log.Logger;
-import pl.dpawlak.flocoge.model.FlocogeModel;
-import pl.dpawlak.flocoge.model.util.ModelsMatchingValidator;
+import static org.mockito.Mockito.mock;
 
 public class ModelLoaderTest {
 
-    private static final File PLAIN_DIAGRAM = new File("src/test/resources/TestDiagramPlain");
+    private static final File PLAIN_DIAGRAM = new File("src/diagramTest/resources/TestDiagramPlain");
 
     @Test
     public void testLoadingModel() throws XMLStreamException, DiagramLoadingException, FileNotFoundException {

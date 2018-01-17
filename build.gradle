@@ -6,11 +6,8 @@ repositories {
     mavenCentral()
 }
 
-dependencies {
-    compile "com.sun.codemodel:codemodel:$codemodelVersion"
-    
-    testCompile "junit:junit:$junitVersion"
-    testCompile "org.mockito:mockito-core:$mockitoVersion"
+configurations {
+    diagramTestCompile.extendsFrom(testCompile)
 }
 
 sourceSets {
@@ -23,10 +20,36 @@ sourceSets {
         compileClasspath += generated.output
         runtimeClasspath += generated.output
     }
-    test {
-        compileClasspath += generated.output
-        runtimeClasspath += generated.output
+    diagramTest {
+        java.srcDir 'src/diagramTest/java'
+        resources.srcDir 'src/diagramTest/resources'
     }
+}
+
+dependencies {
+    compile "com.sun.codemodel:codemodel:$codemodelVersion"
+
+    testCompile sourceSets.generated.output
+    testCompile "junit:junit:$junitVersion"
+    testCompile "org.mockito:mockito-core:$mockitoVersion"
+
+    diagramTestCompile sourceSets.main.output
+    diagramTestCompile sourceSets.test.output
+}
+
+task testDiagrams(type: Test, dependsOn: diagramTestClasses) {
+    testClassesDirs = sourceSets.diagramTest.output.classesDirs
+    classpath = sourceSets.diagramTest.runtimeClasspath
+}
+
+check.dependsOn testDiagrams
+
+jar {
+    manifest {
+        attributes 'Main-Class': "pl.dpawlak.flocoge.Main"
+        attributes 'Flocoge-Version': "$version"
+    }
+    from sourceSets.generated.output
 }
 
 task fatJar(type: Jar) {
@@ -35,7 +58,6 @@ task fatJar(type: Jar) {
         attributes 'Flocoge-Version': "$version"
     }
     baseName = project.name + '-all'
-    from sourceSets.generated.output
     from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
     with jar
 }
