@@ -1,6 +1,8 @@
-.gradle
 .classpath
+.gradle
+.idea/
 .project
 .settings/
 bin/
 build/
+flocoge.iml
